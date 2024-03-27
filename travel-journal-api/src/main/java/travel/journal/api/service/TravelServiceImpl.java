@@ -63,8 +63,9 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public TravelJournalDetailsDTO getTravelJournal(Integer id, Integer userId) {
         TravelJournal travel = travelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Travel with id: " + id + " does not exist"));
-        if (travel.getUser().getUserId() == userId){
-            return modelMapper.map(travel, TravelJournalDetailsDTO.class);}
+        if (travel.getUser().getUserId() == userId) {
+            return modelMapper.map(travel, TravelJournalDetailsDTO.class);
+        }
         throw new NoPermissionException("No permission for travel with id: " + id);
     }
 
