@@ -4,6 +4,7 @@ package travel.journal.api.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
@@ -24,6 +25,7 @@ public class TravelController {
         this.travelServiceImpl = travelServiceImpl;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/travel")
     public ResponseEntity<TravelJournalDetailsDTO> createTravel(@Valid @RequestPart("travelJournalDTO") TravelJournalDTO travelJournalDTO, @RequestParam("file") MultipartFile file) throws IOException {
         TravelJournalDetailsDTO newTravel = travelServiceImpl.createTravelJournal(travelJournalDTO, file);
@@ -31,12 +33,14 @@ public class TravelController {
         return ResponseEntity.ok(newTravel);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/travel/{id}")
     public ResponseEntity<TravelJournalDetailsDTO> getTravel(@PathVariable("id") int travelId) {
         TravelJournalDetailsDTO travelToGet = travelServiceImpl.getTravelJournal(travelId);
         return ResponseEntity.ok(travelToGet);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/myTravels/{userId}")
     public ResponseEntity<List<TravelJournalDetailsDTO>> getUserTravels(@PathVariable("userId") int userId) {
         List<TravelJournalDetailsDTO> userTravelJournals = travelServiceImpl.getUserTravelJournal(userId);
@@ -44,6 +48,7 @@ public class TravelController {
         return ResponseEntity.ok(userTravelJournals);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/travels")
     ResponseEntity<List<TravelJournalDetailsDTO>> getAllTravels() {
         List<TravelJournalDetailsDTO> allTravels = travelServiceImpl.getAllTravelJournals();
@@ -51,6 +56,7 @@ public class TravelController {
         return ResponseEntity.ok(allTravels);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("travel/{id}")
     ResponseEntity<TravelJournalDetailsDTO> modifyTravel(@PathVariable("id") int travelId, @Valid @RequestPart TravelJournalDTO travelJournalDTO, @RequestParam("file") MultipartFile file) throws IOException {
 
@@ -59,6 +65,7 @@ public class TravelController {
         return ResponseEntity.ok(modifiedTravel);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("travel/{id}")
     ResponseEntity<Void> deleteTravel(@PathVariable("id") int travelId) {
         travelServiceImpl.deleteTravelJournal(travelId);

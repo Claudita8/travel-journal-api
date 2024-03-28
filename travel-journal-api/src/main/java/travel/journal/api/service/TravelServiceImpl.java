@@ -58,29 +58,34 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public TravelJournalDetailsDTO modifyTravelJournal(Integer id, TravelJournalDTO travelJournalDTO, MultipartFile file) throws IOException {
         Optional<TravelJournal> existingTravelOptional = travelRepository.findById(id);
-
         if (existingTravelOptional.isPresent()) {
+            if (user.isPresent()) {
+                if (checkuser.equals(existingTravelOptional.get().getUser())) {
+                    TravelJournal existingTravel = existingTravelOptional.get();
 
-            TravelJournal existingTravel = existingTravelOptional.get();
+                    Files modifiedImage = filesService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
 
-            Files modifiedImage = filesService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
+                    existingTravel.setHasCoverPhoto(modifiedImage.getFileContent().length > 0);
+                    existingTravel.setCoverPhoto(modifiedImage);
+                    existingTravel.setBudget(travelJournalDTO.getBudget());
+                    existingTravel.setDescription(travelJournalDTO.getDescription());
+                    existingTravel.setLocation(travelJournalDTO.getLocation());
+                    existingTravel.setEndDate(travelJournalDTO.getEndDate());
+                    existingTravel.setStartDate(travelJournalDTO.getStartDate());
+                    existingTravel.setHasCoverPhoto(existingTravel.getHasCoverPhoto());
+                    existingTravel.setNotesList(existingTravel.getNotesList());
 
-            existingTravel.setHasCoverPhoto(modifiedImage.getFileContent().length > 0);
-            existingTravel.setCoverPhoto(modifiedImage);
-            existingTravel.setBudget(travelJournalDTO.getBudget());
-            existingTravel.setDescription(travelJournalDTO.getDescription());
-            existingTravel.setLocation(travelJournalDTO.getLocation());
-            existingTravel.setEndDate(travelJournalDTO.getEndDate());
-            existingTravel.setStartDate(travelJournalDTO.getStartDate());
-            existingTravel.setHasCoverPhoto(existingTravel.getHasCoverPhoto());
-            existingTravel.setNotesList(existingTravel.getNotesList());
+                    TravelJournal modifiedTravel = travelRepository.save(existingTravel);
 
-            TravelJournal modifiedTravel = travelRepository.save(existingTravel);
-
-            return modelMapper.map(modifiedTravel, TravelJournalDetailsDTO.class);
+                    return modelMapper.map(modifiedTravel, TravelJournalDetailsDTO.class);
+                } else{
+                    throw new UnauthorizedAccesException("Current user is not authorized to update this travel journal");
+                }
+            }
         } else {
             throw new ResourceNotFoundException("Travel with id: " + id + " does not exist");
         }
+        return null;
     }
 
 
