@@ -8,6 +8,7 @@ import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.TravelJournal;
+import travel.journal.api.entities.User;
 import travel.journal.api.exception.ResourceNotFoundException;
 import travel.journal.api.repositories.TravelJournalRepository;
 
@@ -57,6 +58,12 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public TravelJournalDetailsDTO modifyTravelJournal(Integer id, TravelJournalDTO travelJournalDTO, MultipartFile file) throws IOException {
+        Optional<User> user = userService.getCurrentUser();
+        User checkuser = null;
+        if (user.isPresent()) {
+            checkuser = user.get();
+        }
+        
         Optional<TravelJournal> existingTravelOptional = travelRepository.findById(id);
         if (existingTravelOptional.isPresent()) {
             if (user.isPresent()) {
