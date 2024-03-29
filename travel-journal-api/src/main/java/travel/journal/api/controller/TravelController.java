@@ -3,13 +3,12 @@ package travel.journal.api.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
-
+import travel.journal.api.service.TravelService;
 import travel.journal.api.service.TravelServiceImpl;
 
 import java.io.IOException;
