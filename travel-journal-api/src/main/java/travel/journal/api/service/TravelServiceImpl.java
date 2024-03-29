@@ -61,6 +61,12 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public TravelJournalDetailsDTO modifyTravelJournal(Integer id, TravelJournalDTO travelJournalDTO, MultipartFile file) throws IOException {
+        Optional<User> user = userService.getCurrentUser();
+        User checkuser = null;
+        if (user.isPresent()) {
+            checkuser = user.get();
+        }
+        
         Optional<TravelJournal> existingTravelOptional = travelRepository.findById(id);
         if (existingTravelOptional.isPresent()) {
             if (user.isPresent()) {
