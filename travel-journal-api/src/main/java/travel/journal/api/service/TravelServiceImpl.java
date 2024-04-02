@@ -2,6 +2,7 @@
 package travel.journal.api.service;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
@@ -9,6 +10,7 @@ import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
+import travel.journal.api.exception.NoPermissionException;
 import travel.journal.api.exception.ResourceNotFoundException;
 import travel.journal.api.exception.UnauthorizedAccesException;
 import travel.journal.api.repositories.TravelJournalRepository;
@@ -31,6 +33,12 @@ public class TravelServiceImpl implements TravelService {
         this.filesService = filesService;
         this.userService = userService;
         this.modelMapper = modelMapper;
+        this.modelMapper.addMappings(new PropertyMap<TravelJournal, TravelJournalDetailsDTO>() {
+            @Override
+            protected void configure() {
+                map().setCoverPhoto(source.getCoverPhoto());
+            }
+        });
     }
 
     @Override
@@ -53,9 +61,17 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
+    public TravelJournalDetailsDTO getTravelJournal(Integer id, Integer userId) {
+        TravelJournal travel = travelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Travel with id: " + id + " does not exist"));
+        if (travel.getUser().getUserId() == userId) {
+            return modelMapper.map(travel, TravelJournalDetailsDTO.class);
+        }
+        throw new NoPermissionException("No permission for travel with id: " + id);
+    }
+
+    @Override
     public List<TravelJournalDetailsDTO> getAllTravelJournals() {
         List<TravelJournal> allTravels = travelRepository.findAll();
-
         return allTravels.stream().map(travelJournal -> modelMapper.map(travelJournal, TravelJournalDetailsDTO.class)).collect(Collectors.toList());
     }
 
@@ -66,7 +82,7 @@ public class TravelServiceImpl implements TravelService {
         if (user.isPresent()) {
             checkuser = user.get();
         }
-        
+
         Optional<TravelJournal> existingTravelOptional = travelRepository.findById(id);
         if (existingTravelOptional.isPresent()) {
             if (user.isPresent()) {
@@ -127,9 +143,8 @@ public class TravelServiceImpl implements TravelService {
 
 
     @Override
-    public List<TravelJournalDetailsDTO>getUserTravelJournal(int userId) {
+    public List<TravelJournalDetailsDTO> getUserTravelJournal(int userId) {
         List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(userId);
-
         return userTravels.stream().map(travelJournal -> modelMapper.map(travelJournal, TravelJournalDetailsDTO.class)).collect(Collectors.toList());
     }
 }
