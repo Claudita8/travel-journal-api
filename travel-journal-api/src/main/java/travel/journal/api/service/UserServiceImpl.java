@@ -1,7 +1,9 @@
 package travel.journal.api.service;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import travel.journal.api.dto.CreateUserDTO;
 import travel.journal.api.dto.UpdateUserDTO;
@@ -23,13 +25,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final ModelMapper modelMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
 
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder) {
+
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
-        this.passwordEncoder = passwordEncoder;
     }
     public static boolean isValidEmail(String email) {
         Pattern pattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
@@ -41,11 +42,12 @@ public class UserServiceImpl implements UserService {
     public UserDetailsDTO createUser(CreateUserDTO createUserDto) {
         User userToCreate = modelMapper.map(createUserDto, User.class);
         boolean existEmail=userRepository.existsByEmail(userToCreate.getEmail());
+
         if(existEmail || !isValidEmail(userToCreate.getEmail())){
             return null;
         }
-        String encodedPassword = passwordEncoder.encode(createUserDto.getPassword());
-        userToCreate.setPassword(encodedPassword);
+        userToCreate.setPassword(userToCreate.getPassword());
+
         User createdUser = userRepository.save(userToCreate);
         return modelMapper.map(createdUser, UserDetailsDTO.class);
     }
@@ -73,25 +75,21 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(user -> modelMapper.map(user, UserDetailsDTO.class)).collect(Collectors.toList());
     }
 
-    public UserDetailsDTO modifyUser(Integer id, UpdateUserDTO updateUserDTO) {
-        Optional<User> existingUserOptional = userRepository.findById(id);
-        if (existingUserOptional.isPresent()) {
-            User existingUser = existingUserOptional.get();
-            existingUser = User.builder()
-                    .userId(existingUser.getUserId())
-                    .email(existingUser.getEmail())
-                    .firstName(updateUserDTO.getFirst_name())
-                    .lastName(updateUserDTO.getLast_name())
-                    .password(existingUser.getPassword())
-                    .build();
+public UserDetailsDTO modifyUser(Integer id, UpdateUserDTO updateUserDTO) {
+    Optional<User> existingUserOptional = userRepository.findById(id);
+    if (existingUserOptional.isPresent()) {
+        User existingUser = existingUserOptional.get();
 
-            User modifiedUser = userRepository.save(existingUser);
+        existingUser.setFirstName(updateUserDTO.getFirstname());
+        existingUser.setLastName(updateUserDTO.getLastname());
 
-            return modelMapper.map(modifiedUser, UserDetailsDTO.class);
-        } else {
-            return null;
-        }
+        User modifiedUser = userRepository.save(existingUser);
+
+        return modelMapper.map(modifiedUser, UserDetailsDTO.class);
+    } else {
+        return null;
     }
+}
 
 
     @Override
@@ -102,5 +100,18 @@ public class UserServiceImpl implements UserService {
         } else {
             return false;
         }
+    }
+    public Optional<User> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            String email = userDetails.getUsername();
+
+            return userRepository.findByEmail(email);
+        }
+
+        return null;
     }
 }
