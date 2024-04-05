@@ -6,6 +6,7 @@ import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
+import travel.journal.api.dto.travelJournal.outbound.CardTravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.TravelJournal;
@@ -143,9 +144,9 @@ public class TravelServiceImpl implements TravelService {
 
 
     @Override
-    public List<TravelJournalDetailsDTO> getUserTravelJournal(int userId) {
+    public List<CardTravelJournalDTO> getUserTravelJournal(int userId) {
         List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(userId);
-        return userTravels.stream().map(travelJournal -> modelMapper.map(travelJournal, TravelJournalDetailsDTO.class)).collect(Collectors.toList());
+        return userTravels.stream().map(travelJournal -> modelMapper.map(travelJournal, CardTravelJournalDTO.class)).collect(Collectors.toList());
     }
 }
 

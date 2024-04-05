@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 @Data
 public class CardTravelJournalDTO {
-    private Integer userId;
     private Integer travelId;
     private String coverPhoto;
     private String location;
