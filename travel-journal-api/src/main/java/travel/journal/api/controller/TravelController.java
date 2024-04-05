@@ -52,9 +52,9 @@ public class TravelController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/myTravels/{userId}")
-    public ResponseEntity<List<CardTravelJournalDTO>> getUserTravels(@PathVariable("userId") int userId) {
-        List<CardTravelJournalDTO> userTravelJournals = travelServiceImpl.getUserTravelJournal(userId);
+    @GetMapping("/my-travels")
+    public ResponseEntity<List<CardTravelJournalDTO>> getUserTravels() {
+        List<CardTravelJournalDTO> userTravelJournals = travelServiceImpl.getUserTravelJournal();
         return ResponseEntity.ok(userTravelJournals);
     }
 

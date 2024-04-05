@@ -105,7 +105,7 @@ public class TravelServiceImpl implements TravelService {
                     TravelJournal modifiedTravel = travelRepository.save(existingTravel);
 
                     return modelMapper.map(modifiedTravel, TravelJournalDetailsDTO.class);
-                } else{
+                } else {
                     throw new UnauthorizedAccesException("Current user is not authorized to update this travel journal");
                 }
             }
@@ -136,16 +136,20 @@ public class TravelServiceImpl implements TravelService {
                 }
             }
 
+        } else {
+            throw new ResourceNotFoundException("Travel with id: " + id + " does not exist");
         }
-            else{
-                    throw new ResourceNotFoundException("Travel with id: " + id + " does not exist");
-                }
     }
 
 
     @Override
-    public List<CardTravelJournalDTO> getUserTravelJournal(int userId) {
-        List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(userId);
+    public List<CardTravelJournalDTO> getUserTravelJournal() {
+        Optional<User> user = userService.getCurrentUser();
+        User checkuser = null;
+        if (user.isPresent()) {
+            checkuser = user.get();
+        } else throw new UnauthorizedAccesException("Current user is not authorized to get this travel journal");
+        List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(checkuser.getUserId());
         return userTravels.stream().map(travelJournal -> modelMapper.map(travelJournal, CardTravelJournalDTO.class)).collect(Collectors.toList());
     }
 }
