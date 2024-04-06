@@ -40,6 +40,10 @@ public class Notes {
         this.note = note;
         this.filesList = filesList;
     }
+    public Notes() {
+
+    }
+
 
     public int getNoteId() {
         return noteId;

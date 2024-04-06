@@ -150,7 +150,12 @@ public class TravelServiceImpl implements TravelService {
             checkuser = user.get();
         } else throw new UnauthorizedAccesException("Current user is not authorized to get this travel journal");
         List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(checkuser.getUserId());
-        return userTravels.stream().map(travelJournal -> modelMapper.map(travelJournal, CardTravelJournalDTO.class)).collect(Collectors.toList());
+        return userTravels.stream().map(travelJournal -> {
+            CardTravelJournalDTO dto = modelMapper.map(travelJournal, CardTravelJournalDTO.class);
+            int notesNumber = travelJournal.getNotesList().size();
+            dto.setNotesNumber(notesNumber);
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
 
