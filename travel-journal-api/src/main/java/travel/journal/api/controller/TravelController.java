@@ -54,7 +54,7 @@ public class TravelController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/my-travels")
     public ResponseEntity<List<CardTravelJournalDTO>> getUserTravels() {
-        List<CardTravelJournalDTO> userTravelJournals = travelServiceImpl.getUserTravelJournal();
+        List<CardTravelJournalDTO> userTravelJournals = travelServiceImpl.getUserTravelJournals();
         return ResponseEntity.ok(userTravelJournals);
     }
 

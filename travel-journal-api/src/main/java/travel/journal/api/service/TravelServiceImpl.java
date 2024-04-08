@@ -143,13 +143,10 @@ public class TravelServiceImpl implements TravelService {
 
 
     @Override
-    public List<CardTravelJournalDTO> getUserTravelJournal() {
-        Optional<User> user = userService.getCurrentUser();
-        User checkuser = null;
-        if (user.isPresent()) {
-            checkuser = user.get();
-        } else throw new UnauthorizedAccesException("Current user is not authorized to get this travel journal");
-        List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(checkuser.getUserId());
+    public List<CardTravelJournalDTO> getUserTravelJournals() {
+        User user = userService.getCurrentUser().orElseThrow(() -> new UnauthorizedAccesException("Current user is not authorized to get this travel journal"));
+
+        List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(user.getUserId());
         return userTravels.stream().map(travelJournal -> {
             CardTravelJournalDTO dto = modelMapper.map(travelJournal, CardTravelJournalDTO.class);
             int notesNumber = travelJournal.getNotesList().size();
