@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "\"notes\"")
-public class Notes {
+public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "note_id")
@@ -31,7 +31,7 @@ public class Notes {
     @ManyToMany(mappedBy = "notesList")
     private List<Files> filesList;
 
-    public Notes(int noteId, TravelJournal travelJournal, String destinationName, LocalDate startDate, LocalDate endDate, String note, List<Files> filesList) {
+    public Note(int noteId, TravelJournal travelJournal, String destinationName, LocalDate startDate, LocalDate endDate, String note, List<Files> filesList) {
         this.noteId = noteId;
         this.travelJournal = travelJournal;
         this.destinationName = destinationName;
@@ -40,7 +40,7 @@ public class Notes {
         this.note = note;
         this.filesList = filesList;
     }
-    public Notes() {
+    public Note() {
 
     }
 
