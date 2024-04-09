@@ -39,7 +39,6 @@ public class NoteServiceImpl implements NoteService  {
         if(photos.size()==1){
             MultipartFile photo= photos.get(0);
             byte[] check=photo.getBytes();
-            System.out.println(check.length);
             if(check.length==0) {
                 throw new BadRequestException("Trebuie incarcat cel putin o poza.");
             }

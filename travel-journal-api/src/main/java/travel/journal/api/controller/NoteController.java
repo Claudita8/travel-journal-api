@@ -32,7 +32,7 @@ public class NoteController {
         this.noteRepository = noteRepository;
     }
 
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/saveNote/{traveljournalid}")
     public ResponseEntity<?> saveNote(@PathVariable("traveljournalid") Integer id, @RequestPart("CreateNoteDTO") CreateNoteDTO createNoteDTO, @RequestParam("files") List<MultipartFile> files) throws IOException {
         noteService.save(id, createNoteDTO, files);
