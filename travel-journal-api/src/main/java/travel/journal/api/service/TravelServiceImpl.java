@@ -6,6 +6,7 @@ import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
+import travel.journal.api.dto.travelJournal.outbound.CardTravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.TravelJournal;
@@ -104,7 +105,7 @@ public class TravelServiceImpl implements TravelService {
                     TravelJournal modifiedTravel = travelRepository.save(existingTravel);
 
                     return modelMapper.map(modifiedTravel, TravelJournalDetailsDTO.class);
-                } else{
+                } else {
                     throw new UnauthorizedAccesException("Current user is not authorized to update this travel journal");
                 }
             }
@@ -135,17 +136,23 @@ public class TravelServiceImpl implements TravelService {
                 }
             }
 
+        } else {
+            throw new ResourceNotFoundException("Travel with id: " + id + " does not exist");
         }
-            else{
-                    throw new ResourceNotFoundException("Travel with id: " + id + " does not exist");
-                }
     }
 
 
     @Override
-    public List<TravelJournalDetailsDTO> getUserTravelJournal(int userId) {
-        List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(userId);
-        return userTravels.stream().map(travelJournal -> modelMapper.map(travelJournal, TravelJournalDetailsDTO.class)).collect(Collectors.toList());
+    public List<CardTravelJournalDTO> getUserTravelJournals() {
+        User user = userService.getCurrentUser().orElseThrow(() -> new UnauthorizedAccesException("Current user is not authorized to get this travel journal"));
+
+        List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(user.getUserId());
+        return userTravels.stream().map(travelJournal -> {
+            CardTravelJournalDTO dto = modelMapper.map(travelJournal, CardTravelJournalDTO.class);
+            int notesNumber = travelJournal.getNotesList().size();
+            dto.setNotesNumber(notesNumber);
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
 

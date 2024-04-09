@@ -3,6 +3,7 @@ package travel.journal.api.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
+import travel.journal.api.dto.travelJournal.outbound.CardTravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
 
 import java.io.IOException;
@@ -23,6 +24,6 @@ public interface TravelService {
 
     void deleteTravelJournal(Integer id);
 
-    List<TravelJournalDetailsDTO> getUserTravelJournal(int userId);
+    List<CardTravelJournalDTO> getUserTravelJournals();
 }
 
