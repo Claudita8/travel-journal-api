@@ -147,6 +147,11 @@ public class TravelServiceImpl implements TravelService {
         List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(userId);
         return userTravels.stream().map(travelJournal -> modelMapper.map(travelJournal, TravelJournalDetailsDTO.class)).collect(Collectors.toList());
     }
+
+    @Override
+    public TravelJournal getTravelJourbalById(int id) {
+        return travelRepository.findById(id).orElse(null);
+    }
 }
 
 

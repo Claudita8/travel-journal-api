@@ -1,6 +1,8 @@
 package travel.journal.api.service;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,12 +10,16 @@ import org.springframework.stereotype.Service;
 import travel.journal.api.dto.CreateUserDTO;
 import travel.journal.api.dto.UpdateUserDTO;
 import travel.journal.api.dto.UserDetailsDTO;
+import travel.journal.api.entities.PasswordResetToken;
 import travel.journal.api.entities.User;
+import travel.journal.api.repositories.TokenRepository;
 import travel.journal.api.repositories.UserRepository;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -23,14 +29,19 @@ public class UserServiceImpl implements UserService {
     private static final String EMAIL_REGEX = "^[A-Za-z0-9.%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$";
 
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
 
     private final ModelMapper modelMapper;
+    private final JavaMailSender javaMailSender;
 
 
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
+
+    public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository, ModelMapper modelMapper, JavaMailSender javaMailSender) {
         this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
         this.modelMapper = modelMapper;
+        this.javaMailSender = javaMailSender;
     }
     public static boolean isValidEmail(String email) {
         Pattern pattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
@@ -39,7 +50,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailsDTO createUser(CreateUserDTO createUserDto) {
+    public UserDetailsDTO
+    createUser(CreateUserDTO createUserDto) {
         User userToCreate = modelMapper.map(createUserDto, User.class);
         boolean existEmail=userRepository.existsByEmail(userToCreate.getEmail());
 
@@ -101,6 +113,7 @@ public UserDetailsDTO modifyUser(Integer id, UpdateUserDTO updateUserDTO) {
             return false;
         }
     }
+    @Override
     public Optional<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -114,4 +127,5 @@ public UserDetailsDTO modifyUser(Integer id, UpdateUserDTO updateUserDTO) {
 
         return null;
     }
+
 }
