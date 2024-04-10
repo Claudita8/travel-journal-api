@@ -39,7 +39,7 @@ public class Files {
             joinColumns = @JoinColumn(name = "file_id"),
             inverseJoinColumns = @JoinColumn(name = "note_id")
     )
-    private List<Notes> notesList;
+    private List<Note> notesList;
 
 }
 
