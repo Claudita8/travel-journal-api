@@ -6,33 +6,43 @@ import travel.journal.api.dto.CreateNoteDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.Note;
 import travel.journal.api.entities.TravelJournal;
+import travel.journal.api.entities.User;
 import travel.journal.api.exception.BadRequestException;
-import travel.journal.api.repositories.FilesRepository;
+import travel.journal.api.exception.NoPermissionException;
 import travel.journal.api.repositories.NoteRepository;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NoteServiceImpl implements NoteService  {
     private final TravelService travelService;
 
-    private final FilesRepository filesRepository;
 
     private final FilesServiceImpl filesService;
     private final NoteRepository noteRepository;
+    private final UserService userService;
 
-    public NoteServiceImpl(TravelService travelService, FilesRepository filesRepository, FilesServiceImpl filesService, NoteRepository noteRepository) {
+    public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, UserService userService) {
         this.travelService = travelService;
-        this.filesRepository = filesRepository;
         this.filesService = filesService;
         this.noteRepository = noteRepository;
+        this.userService = userService;
     }
 
     @Override
     public boolean save(int id, CreateNoteDTO createNoteDTO, List<MultipartFile> photos ) throws IOException {
         TravelJournal travelJournal=travelService.getTravelJourbalById(id);
+        Optional<User> user = userService.getCurrentUser();
+        if(user.isPresent()) {
+            User getuser=user.get();
+            if (travelJournal.getUser() != getuser) {
+                throw new NoPermissionException("You aren't an owner of travel journal card.");
+            }
+        }
         if(travelJournal==null){
           throw new BadRequestException("Travel with id: " + id + " does not exist");
         }
