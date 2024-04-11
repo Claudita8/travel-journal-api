@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import travel.journal.api.entities.Note;
 import travel.journal.api.entities.User;
 import travel.journal.api.exception.ResourceNotFoundException;
-import travel.journal.api.exception.UnauthorizedAccesException;
 import travel.journal.api.repositories.FilesRepository;
 import travel.journal.api.repositories.NotesRepository;
 
