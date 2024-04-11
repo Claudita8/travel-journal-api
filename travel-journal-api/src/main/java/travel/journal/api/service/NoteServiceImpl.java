@@ -34,7 +34,7 @@ public class NoteServiceImpl implements NoteService{
                     filesRepository.deleteAll(noteToDelete.getFilesList());
                     notesRepository.delete(noteToDelete);
                 } else {
-                    throw new UnauthorizedAccesException("Current user is not authorized to delete this note");
+                    throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
                 }
         } else {
             throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
