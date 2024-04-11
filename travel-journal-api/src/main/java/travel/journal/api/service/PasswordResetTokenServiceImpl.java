@@ -40,19 +40,20 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     @Override
     public String sendEmail(User user) {
         try {
-            String resetLink = generateResetToken(user);
+            PasswordResetToken resetToken=generateResetToken(user);
+            String resetLink = "http://localhost:8080/api/user/resetPassword/";
 
             SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setFrom("test@stancuf.ro");
+            msg.setFrom("noreply@stancuf.ro");
             msg.setTo(user.getEmail());
 
             msg.setSubject("Test");
             LocalDateTime dateTime = LocalDateTime.now().plusMinutes(30);
             String formattedTime = dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-            msg.setText("Hello "+ user.getFirstName()+" "+user.getLastName()+"\n\n" + "Please click on this link to Reset your Password :" + resetLink + " . \n\n"+"This link will automatically expire on the hour: "+formattedTime);
+            msg.setText("Hello "+ user.getFirstName()+" "+user.getLastName()+"\n\n" + "Please click on this link to reset your Password :" + resetLink+resetToken.getToken() + " . \n\n"+"This link will automatically expire on the hour: "+formattedTime);
 
             javaMailSender.send(msg);
-
+            tokenRepository.save(resetToken);
             return "success";
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,7 +63,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     }
 
     @Override
-    public String generateResetToken(User user) {
+    public PasswordResetToken generateResetToken(User user) {
         UUID uuid = UUID.randomUUID();
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setUser(user);
@@ -70,12 +71,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         resetToken.setExpiryDateTime(LocalDateTime.now().plusMinutes(30));
         resetToken.setUser(user);
         resetToken.setUsed(false);
-        PasswordResetToken token = saveTokenAndGet(resetToken);
-        if (token != null) {
-            String endpointUrl = "http://localhost:8080/api/user/resetPassword";
-            return endpointUrl + "/" + resetToken.getToken();
-        }
-        return "";
+       return resetToken;
     }
 
     @Override
@@ -100,10 +96,5 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     @Override
     public boolean hasValidResetToken(PasswordResetToken passwordResetToken){
         return passwordResetToken != null && hasExpired(passwordResetToken.getExpiryDateTime()) && !passwordResetToken.isUsed();
-    }
-    @Override
-    public void deleteExpiredOrUsedResetToken() {
-        System.out.println("Ștergere token-urilor expirate sau utilizate");
-        tokenRepository.deleteByUsedTrueOrExpiryDateTimeBefore(LocalDateTime.now());
     }
 }

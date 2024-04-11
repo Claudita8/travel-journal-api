@@ -42,9 +42,8 @@ public class Note {
     @Column(name = "description")
     private String description;
 
-//    @ManyToMany(mappedBy = "notesList")
-//    private List<Files> filesList;
-        @ManyToMany
+
+    @ManyToMany
     @JsonIgnore
     @JoinTable(
             name = "notes_files",

@@ -11,9 +11,5 @@ import java.time.LocalDateTime;
 public interface TokenRepository extends JpaRepository<PasswordResetToken, Integer> {
 
     PasswordResetToken findByToken(String token);
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM PasswordResetToken t WHERE t.used = true OR t.expiryDateTime <= :currentDateTime")
-    void deleteByUsedTrueOrExpiryDateTimeBefore(LocalDateTime currentDateTime);
 
 }

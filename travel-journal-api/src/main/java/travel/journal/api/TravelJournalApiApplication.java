@@ -39,11 +39,7 @@ public class TravelJournalApiApplication {
     public Password_Encoder password_Encoder(){
         return new Password_Encoder();
     }
-
-//    @Bean
-//    public JavaMailSender javaMailSender(){
-//        return new JavaMailSenderImpl();
-//    }
+    
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -54,10 +50,4 @@ public class TravelJournalApiApplication {
             }
         };
     }
-
-//    @Scheduled(cron = "0 0/5 * * * *")
-//    public void scheduleTask() {
-//        System.out.println("Metoda scheduleTask() a fost apelată la: "+ LocalDateTime.now());
-//        passwordResetTokenService.deleteExpiredOrUsedResetToken();
-//    }
 }
