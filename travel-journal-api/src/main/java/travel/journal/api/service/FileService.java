@@ -6,8 +6,11 @@ import travel.journal.api.entities.Files;
 import java.io.IOException;
 
 public interface FileService {
-
     Files saveImage(MultipartFile file) throws IOException;
+
     void deleteImage(int id);
-    public Files modifyImage(int id, MultipartFile file) throws IOException;
+
+    Files modifyImage(int id, MultipartFile file) throws IOException;
+
+    Files ChechAndsaveImage(MultipartFile file) throws IOException;
 }

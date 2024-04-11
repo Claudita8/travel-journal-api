@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 @EnableJpaRepositories
 public interface FilesRepository extends JpaRepository<Files, Integer >{
-
+    Files findByFileName(String fileName);
 }

@@ -24,8 +24,4 @@ public class CreateNoteDTO {
     @NotBlank
     private String description;
 
-    public LocalDate getParsedDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu");
-        return LocalDate.parse(date, formatter);
-    }
 }

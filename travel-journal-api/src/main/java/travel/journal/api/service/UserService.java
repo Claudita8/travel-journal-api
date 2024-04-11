@@ -1,7 +1,5 @@
 package travel.journal.api.service;
 
-
-;
 import travel.journal.api.dto.CreateUserDTO;
 import travel.journal.api.dto.UpdateUserDTO;
 import travel.journal.api.dto.UserDetailsDTO;
@@ -26,6 +24,6 @@ public interface UserService {
     Optional<User> findUserByEmail(String email);
 
     void saveUser(User user);
-    Optional<User> getCurrentUser();
 
+    Optional<User> getCurrentUser();
 }

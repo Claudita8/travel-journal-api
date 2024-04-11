@@ -27,7 +27,6 @@ public class UserController {
         this.passwordResetTokenService = passwordResetTokenService;
     }
 
-
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO user) {
         UserDetailsDTO newUser = userServiceImpl.createUser(user);
@@ -65,6 +64,7 @@ public class UserController {
         }
         return ResponseEntity.ok(modifiedUser);
     }
+
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/deleteUser/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Integer userId) {
@@ -77,32 +77,24 @@ public class UserController {
         }
     }
 
-
-
-
-
-    //De aici incepe resetarea parolei.
     @PostMapping("/forgotPassword")
     public ResponseEntity<?> forgotPassordProcess(@RequestBody EmailResetPassword emailResetPassword) {
-        String output = "";
         Optional<User> user = userServiceImpl.findUserByEmail(emailResetPassword.getEmail());
-        if (user.isPresent()) {
+        if(user.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
         boolean existTicket =passwordResetTokenService.canGenerateNewResetToken(user.get());
         if(!existTicket){
             return ResponseEntity.badRequest().body("Ai un ticket neutilizat");
         }
-            User getuser=user.get();
-            output = passwordResetTokenService.sendEmail(getuser);
-        }
-        if (output.equals("success")) {
-            return ResponseEntity.ok().body("Un email ti-a fost trimis.");
-        }
-        else if( output.equals("error")){
+        User getuser=user.get();
+        boolean sendemail = passwordResetTokenService.sendEmail(getuser);
+        if (!sendemail) {
             return ResponseEntity.internalServerError().body("Din pacate a fost o eroare la procesarea cererii.");
         }
-
-       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contul nu exista.");
+        return ResponseEntity.ok().body("Un email ti-a fost trimis.");
     }
+
     @GetMapping("/resetPassword/{token}")
     public  ResponseEntity<?> resetPasswordForm(@PathVariable String token) {
         PasswordResetToken reset = passwordResetTokenService.findByToken(token);

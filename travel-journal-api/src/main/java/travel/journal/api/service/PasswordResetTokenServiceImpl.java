@@ -1,5 +1,6 @@
 package travel.journal.api.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     }
 
     @Override
-    public String sendEmail(User user) {
+    public boolean sendEmail(User user) {
         try {
             PasswordResetToken resetToken=generateResetToken(user);
             String resetLink = "http://localhost:8080/api/user/resetPassword/";
@@ -46,14 +47,14 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
             msg.setSubject("Test");
             LocalDateTime dateTime = LocalDateTime.now().plusMinutes(30);
             String formattedTime = dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-            msg.setText("Hello "+ user.getFirstName()+" "+user.getLastName()+"\n\n" + "Please click on this link to reset your Password :" + resetLink+resetToken.getToken() + " . \n\n"+"This link will automatically expire on the hour: "+formattedTime);
+            msg.setText("Hello " + user.getFirstName()+" "+user.getLastName()+ "\n\n" + "Please click on this link to reset your Password: " + resetLink+resetToken.getToken() + " . \n\n"+"This link will automatically expire on the hour: "+formattedTime);
 
             javaMailSender.send(msg);
             tokenRepository.save(resetToken);
-            return "success";
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return "error";
+            return false;
         }
 
     }
@@ -77,18 +78,23 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     }
     @Override
     public boolean canGenerateNewResetToken(User user) {
-        List<travel.journal.api.entities.PasswordResetToken> userTickets = user.getPasswordResetTokens();
-        if(userTickets.isEmpty()){
+        List<PasswordResetToken> userTokens = user.getPasswordResetTokens();
+        if(userTokens.isEmpty()){
             return true;
         }
-        for (PasswordResetToken ticket : userTickets) {
-            if ((!ticket.isUsed() && ticket.getExpiryDateTime().isAfter(LocalDateTime.now()))) {
+        for (PasswordResetToken token : userTokens) {
+            if (isTokenUsedOrDateExpired(token)) {
                 return false;
             }
-
         }
         return true;
     }
+
+    @Override
+    public boolean isTokenUsedOrDateExpired(PasswordResetToken passwordResetToken){
+        return (!passwordResetToken.isUsed() && passwordResetToken.getExpiryDateTime().isAfter(LocalDateTime.now()));
+    }
+
     @Override
     public boolean hasValidResetToken(PasswordResetToken passwordResetToken){
         return passwordResetToken != null && hasExpired(passwordResetToken.getExpiryDateTime()) && !passwordResetToken.isUsed();

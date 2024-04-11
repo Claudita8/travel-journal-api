@@ -32,14 +32,12 @@ public class TravelJournalApiApplication {
     public ModelMapper getModelMapper() {
         return new ModelMapper();
     }
-    @Autowired
-    private PasswordResetTokenService passwordResetTokenService;
 
     @Bean
     public Password_Encoder password_Encoder(){
         return new Password_Encoder();
     }
-    
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

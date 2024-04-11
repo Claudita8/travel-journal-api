@@ -149,7 +149,7 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public TravelJournal getTravelJourbalById(int id) {
+    public TravelJournal getTravelJournalById(int id) {
         return travelRepository.findById(id).orElse(null);
     }
 }

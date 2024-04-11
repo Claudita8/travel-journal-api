@@ -29,19 +29,13 @@ public class UserServiceImpl implements UserService {
     private static final String EMAIL_REGEX = "^[A-Za-z0-9.%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$";
 
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
 
     private final ModelMapper modelMapper;
-    private final JavaMailSender javaMailSender;
 
 
-
-
-    public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository, ModelMapper modelMapper, JavaMailSender javaMailSender) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
-        this.tokenRepository = tokenRepository;
         this.modelMapper = modelMapper;
-        this.javaMailSender = javaMailSender;
     }
     public static boolean isValidEmail(String email) {
         Pattern pattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
@@ -50,8 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailsDTO
-    createUser(CreateUserDTO createUserDto) {
+    public UserDetailsDTO createUser(CreateUserDTO createUserDto) {
         User userToCreate = modelMapper.map(createUserDto, User.class);
         boolean existEmail=userRepository.existsByEmail(userToCreate.getEmail());
 
@@ -117,8 +110,7 @@ public UserDetailsDTO modifyUser(Integer id, UpdateUserDTO updateUserDTO) {
     public Optional<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
 
             String email = userDetails.getUsername();
 

@@ -38,10 +38,8 @@ public class Note {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
 
-
     @Column(name = "description")
     private String description;
-
 
     @ManyToMany
     @JsonIgnore
@@ -51,6 +49,5 @@ public class Note {
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )
     private List<Files> photos;
-
 }
 

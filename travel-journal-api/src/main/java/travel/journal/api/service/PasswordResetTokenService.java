@@ -6,14 +6,20 @@ import travel.journal.api.entities.User;
 import java.time.LocalDateTime;
 
 public interface PasswordResetTokenService {
-    public String sendEmail(User user);
-    public PasswordResetToken generateResetToken(User user);
+    boolean sendEmail(User user);
 
-    public boolean hasExpired(LocalDateTime expiryDateTime);
-    public boolean canGenerateNewResetToken(User user);
+    PasswordResetToken generateResetToken(User user);
+
+    boolean hasExpired(LocalDateTime expiryDateTime);
+
+    boolean canGenerateNewResetToken(User user);
+
     void saveToken(PasswordResetToken passwordResetToken);
 
     PasswordResetToken findByToken(String token);
+
     boolean hasValidResetToken(PasswordResetToken passwordResetToken);
+
+    boolean isTokenUsedOrDateExpired(PasswordResetToken passwordResetToken);
 
 }

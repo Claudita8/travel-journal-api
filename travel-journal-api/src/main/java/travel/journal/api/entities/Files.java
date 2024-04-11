@@ -34,10 +34,7 @@ public class Files {
     @JsonIgnore
     private List<TravelJournal> travelJournalList;
 
-
-    @ManyToMany(mappedBy = "photos",cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "photos", cascade = CascadeType.ALL)
     private List<Note> notesList;
-
-
 }
 

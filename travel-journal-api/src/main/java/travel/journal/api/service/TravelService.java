@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface TravelService {
-
-
     TravelJournalDetailsDTO createTravelJournal(TravelJournalDTO travelJournal, MultipartFile file) throws IOException;
 
     TravelJournalDetailsDTO getTravelJournal(Integer id);
@@ -26,6 +24,6 @@ public interface TravelService {
 
     List<TravelJournalDetailsDTO> getUserTravelJournal(int userId);
 
-    TravelJournal getTravelJourbalById(int id);
+    TravelJournal getTravelJournalById(int id);
 }
 
