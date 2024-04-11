@@ -29,12 +29,11 @@ public class Note {
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "note")
-    private String note;
+    @Column(name = "description")
+    private String description;
 
     @ManyToMany(mappedBy = "notesList")
     private List<Files> filesList;
-
 
 }
 

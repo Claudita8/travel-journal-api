@@ -43,7 +43,7 @@ public class NoteServiceImpl implements NoteService {
         List<Files> filesList = fileRepository.findByNoteId(noteId);
 
         NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
-        noteDetailsDTO.setTravelPhotosFiles(filesList);
+        noteDetailsDTO.setFilesList(filesList);
 
         return noteDetailsDTO;
     }
