@@ -16,6 +16,6 @@ public class NoteDetailsDTO {
     private Integer noteId;
     private List<Files> filesList;
     private String destinationName;
-    private LocalDate date;
+    private String date;
     private String description;
 }

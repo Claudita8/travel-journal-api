@@ -13,6 +13,7 @@ import travel.journal.api.repositories.FilesRepository;
 import travel.journal.api.repositories.NoteRepository;
 import travel.journal.api.security.services.UserDetailsImpl;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -43,8 +44,13 @@ public class NoteServiceImpl implements NoteService {
         List<Files> filesList = fileRepository.findByNoteId(noteId);
 
         NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
+        noteDetailsDTO.setDate(getFormattedDate(note.getDate()));
         noteDetailsDTO.setFilesList(filesList);
 
         return noteDetailsDTO;
+    }
+
+    private String getFormattedDate(LocalDate date){
+        return String.format("%s/%s/%s",date.getDayOfMonth(), date.getMonthValue(),date.getYear());
     }
 }
