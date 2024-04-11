@@ -37,9 +37,9 @@ public class NoteServiceImpl implements NoteService {
         UserDetailsImpl userDetails = (UserDetailsImpl) principal;
         userId = userDetails.getId();
 
-        Note note = noteRepository.findById(noteId).orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
-        if (note.getTravelJournal().getTravelId() != travelId || note.getTravelJournal().getUser().getUserId() != userId)
-            throw new NoPermissionException("No permission for this note");
+        Note note = noteRepository.findByTravelJournal_User_UserIdAndTravelJournal_TravelIdAndNoteId(userId,travelId,noteId);
+        if (note == null)
+            throw new ResourceNotFoundException("");
 
         List<Files> filesList = fileRepository.findByNoteId(noteId);
 

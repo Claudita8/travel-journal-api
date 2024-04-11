@@ -6,5 +6,5 @@ import travel.journal.api.entities.Note;
 
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Integer> {
-
+    Note findByTravelJournal_User_UserIdAndTravelJournal_TravelIdAndNoteId(int userId, int travelId, int noteId);
 }
