@@ -87,17 +87,19 @@ public class UserController {
         String output = "";
         Optional<User> user = userServiceImpl.findUserByEmail(emailResetPassword.getEmail());
         if (user.isPresent()) {
-        boolean existticket=passwordResetTokenService.canGenerateNewResetToken(user.get());
-        if(!existticket){
+        boolean existTicket =passwordResetTokenService.canGenerateNewResetToken(user.get());
+        if(!existTicket){
             return ResponseEntity.badRequest().body("Ai un ticket neutilizat");
         }
             User getuser=user.get();
             output = passwordResetTokenService.sendEmail(getuser);
         }
         if (output.equals("success")) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body("Un email ti-a fost trimis.");
         }
-//        else if( output.)
+        else if( output.equals("error")){
+            return ResponseEntity.internalServerError().body("Din pacate a fost o eroare la procesarea cererii.");
+        }
 
        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contul nu exista.");
     }

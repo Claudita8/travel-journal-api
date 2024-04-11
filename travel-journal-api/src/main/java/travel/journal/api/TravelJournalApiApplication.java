@@ -54,10 +54,4 @@ public class TravelJournalApiApplication {
             }
         };
     }
-
-//    @Scheduled(cron = "0 0/5 * * * *")
-//    public void scheduleTask() {
-//        System.out.println("Metoda scheduleTask() a fost apelată la: "+ LocalDateTime.now());
-//        passwordResetTokenService.deleteExpiredOrUsedResetToken();
-//    }
 }

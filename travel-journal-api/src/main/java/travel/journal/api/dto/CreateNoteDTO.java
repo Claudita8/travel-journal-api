@@ -16,12 +16,8 @@ import java.util.List;
 
 @Data
 public class CreateNoteDTO {
-//    private List<Files> photo;
     @NotBlank
     private String destinationName;
-//    @NotBlank
-//    @DateTimeFormat(pattern = "dd/MM/yyyy")
-//    private LocalDate date;
     @NotBlank
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private String date;
