@@ -9,6 +9,7 @@ import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
 import travel.journal.api.exception.BadRequestException;
 import travel.journal.api.exception.NoPermissionException;
+import travel.journal.api.exception.ResourceNotFoundException;
 import travel.journal.api.repositories.NoteRepository;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class NoteServiceImpl implements NoteService  {
         if(user.isPresent()) {
             User getuser=user.get();
             if (travelJournal.getUser() != getuser) {
-                throw new NoPermissionException("You aren't an owner of travel journal card.");
+                throw new ResourceNotFoundException("");
             }
         }
         if(travelJournal==null){

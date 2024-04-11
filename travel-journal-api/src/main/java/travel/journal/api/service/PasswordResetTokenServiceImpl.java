@@ -29,10 +29,6 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
          tokenRepository.save(passwordResetToken);
     }
     @Override
-    public PasswordResetToken saveTokenAndGet(PasswordResetToken passwordResetToken){
-        return tokenRepository.save(passwordResetToken);
-    }
-    @Override
     public PasswordResetToken findByToken(String token){
         return tokenRepository.findByToken(token);
     }
