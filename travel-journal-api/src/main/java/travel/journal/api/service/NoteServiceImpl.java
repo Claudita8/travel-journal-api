@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.Note;
-import travel.journal.api.exception.NoPermissionException;
 import travel.journal.api.exception.ResourceNotFoundException;
 import travel.journal.api.repositories.FilesRepository;
 import travel.journal.api.repositories.NoteRepository;
