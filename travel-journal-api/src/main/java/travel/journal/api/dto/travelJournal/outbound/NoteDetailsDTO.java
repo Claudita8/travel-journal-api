@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import travel.journal.api.entities.Files;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
