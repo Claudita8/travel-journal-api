@@ -1,7 +1,6 @@
 package travel.journal.api.models;
 
 import lombok.Data;
-
 import java.util.List;
 
 @Data

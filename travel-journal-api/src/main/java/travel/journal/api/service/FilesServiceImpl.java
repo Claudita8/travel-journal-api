@@ -57,4 +57,15 @@ public class FilesServiceImpl implements FileService{
            return this.saveImage(file);
         }
     }
+
+    @Override
+    public Files CheckAndSaveImage(MultipartFile file) throws IOException {
+        Files existingFile = filesRepository.findByFileName(file.getOriginalFilename());
+
+        if (existingFile != null) {
+            return existingFile;
+        } else {
+            return saveImage(file);
+        }
+    }
 }

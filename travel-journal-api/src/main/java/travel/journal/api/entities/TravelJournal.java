@@ -2,7 +2,6 @@ package travel.journal.api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -44,9 +43,9 @@ public class TravelJournal {
 
     @OneToMany(mappedBy = "travelJournal",cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Notes> notesList;
+    private List<Note> notesList;
 
-    public TravelJournal(int travelId, User user, String location, LocalDate startDate, LocalDate endDate, double budget, String description, Boolean hasCoverPhoto, Files coverPhoto, List<Notes> notesList) {
+    public TravelJournal(int travelId, User user, String location, LocalDate startDate, LocalDate endDate, double budget, String description, Boolean hasCoverPhoto, Files coverPhoto, List<Note> notesList) {
         this.travelId = travelId;
         this.user = user;
         this.location = location;
@@ -134,11 +133,11 @@ public class TravelJournal {
         this.coverPhoto = coverPhoto;
     }
 
-    public List<Notes> getNotesList() {
+    public List<Note> getNotesList() {
         return notesList;
     }
 
-    public void setNotesList(List<Notes> notesList) {
+    public void setNotesList(List<Note> notesList) {
         this.notesList = notesList;
     }
 

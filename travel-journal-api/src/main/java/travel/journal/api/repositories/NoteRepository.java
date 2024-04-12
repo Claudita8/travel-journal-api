@@ -3,10 +3,10 @@ package travel.journal.api.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
-import travel.journal.api.entities.Files;
+import travel.journal.api.entities.Note;
 
 @Repository
 @EnableJpaRepositories
-public interface FilesRepository extends JpaRepository<Files, Integer >{
-    Files findByFileName(String fileName);
+public interface NoteRepository extends JpaRepository<Note, Integer> {
+
 }

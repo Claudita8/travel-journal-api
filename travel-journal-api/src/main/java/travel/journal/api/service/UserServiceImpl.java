@@ -10,8 +10,6 @@ import travel.journal.api.dto.UpdateUserDTO;
 import travel.journal.api.dto.UserDetailsDTO;
 import travel.journal.api.entities.User;
 import travel.journal.api.repositories.UserRepository;
-
-
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -25,7 +23,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final ModelMapper modelMapper;
-
 
 
     public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
@@ -101,11 +98,11 @@ public UserDetailsDTO modifyUser(Integer id, UpdateUserDTO updateUserDTO) {
             return false;
         }
     }
+    @Override
     public Optional<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
 
             String email = userDetails.getUsername();
 
@@ -114,4 +111,5 @@ public UserDetailsDTO modifyUser(Integer id, UpdateUserDTO updateUserDTO) {
 
         return null;
     }
+
 }

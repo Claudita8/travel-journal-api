@@ -10,9 +10,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateUserDTO {
+public class ResetPasswordDTO {
     @NotBlank
-    private String firstname;
+    private String token;
     @NotBlank
-    private String lastname;
+    private String password;
 }
