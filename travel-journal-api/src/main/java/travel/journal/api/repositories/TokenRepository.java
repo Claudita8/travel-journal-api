@@ -1,15 +1,13 @@
 package travel.journal.api.repositories;
 
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.stereotype.Repository;
 import travel.journal.api.entities.PasswordResetToken;
 
-import java.time.LocalDateTime;
-
+@Repository
+@EnableJpaRepositories
 public interface TokenRepository extends JpaRepository<PasswordResetToken, Integer> {
-
     PasswordResetToken findByToken(String token);
 
 }

@@ -1,7 +1,6 @@
 package travel.journal.api.models;
 
 import lombok.Data;
-
 import java.time.LocalDate;
 import java.util.List;
 

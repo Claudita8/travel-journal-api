@@ -1,8 +1,6 @@
 package travel.journal.api.service;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,16 +8,10 @@ import org.springframework.stereotype.Service;
 import travel.journal.api.dto.CreateUserDTO;
 import travel.journal.api.dto.UpdateUserDTO;
 import travel.journal.api.dto.UserDetailsDTO;
-import travel.journal.api.entities.PasswordResetToken;
 import travel.journal.api.entities.User;
-import travel.journal.api.repositories.TokenRepository;
 import travel.journal.api.repositories.UserRepository;
-
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
