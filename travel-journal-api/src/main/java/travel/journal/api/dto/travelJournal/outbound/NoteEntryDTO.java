@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @Data
 public class NoteEntryDTO {
     private Integer noteId;
-    private String title;
+    private String destinationName;
     private LocalDate date;
     private String description;
 }
