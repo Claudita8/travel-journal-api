@@ -73,14 +73,11 @@ public class NoteServiceImpl implements NoteService  {
         note.setDestinationName(createNoteDTO.getDestinationName());
         note.setTravelJournal(travelJournal);
 
-
         List<Files> files = new ArrayList<>();
-
         for(MultipartFile photo:photos){
-            Files file=filesService.ChechAndsaveImage(photo);
 
-           files.add(file);
-
+            Files file=filesService.ChechAndSaveImage(photo);
+            files.add(file);
         }
         note.setPhotos(files);
         save(note);

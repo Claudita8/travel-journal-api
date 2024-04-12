@@ -78,7 +78,7 @@ public class UserController {
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<?> forgotPassordProcess(@RequestBody EmailResetPassword emailResetPassword) {
+    public ResponseEntity<?> forgotPassordProcess(@RequestBody EmailResetPasswordDTO emailResetPassword) {
         Optional<User> user = userServiceImpl.findUserByEmail(emailResetPassword.getEmail());
         if(user.isEmpty()){
             return ResponseEntity.notFound().build();

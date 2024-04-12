@@ -59,15 +59,12 @@ public class FilesServiceImpl implements FileService{
     }
 
     @Override
-    public Files ChechAndsaveImage(MultipartFile file) throws IOException {
+    public Files ChechAndSaveImage(MultipartFile file) throws IOException {
         Files existingFile = filesRepository.findByFileName(file.getOriginalFilename());
 
         if (existingFile != null) {
-
             return existingFile;
-
         } else {
-
             return saveImage(file);
         }
     }

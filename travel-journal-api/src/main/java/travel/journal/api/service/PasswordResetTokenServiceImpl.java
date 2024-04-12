@@ -24,7 +24,6 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         this.javaMailSender = javaMailSender;
     }
 
-
     @Override
     public void saveToken(PasswordResetToken passwordResetToken){
          tokenRepository.save(passwordResetToken);
@@ -76,6 +75,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         LocalDateTime currentDateTime = LocalDateTime.now();
         return expiryDateTime.isAfter(currentDateTime);
     }
+
     @Override
     public boolean canGenerateNewResetToken(User user) {
         List<PasswordResetToken> userTokens = user.getPasswordResetTokens();

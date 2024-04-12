@@ -12,5 +12,5 @@ public interface FileService {
 
     Files modifyImage(int id, MultipartFile file) throws IOException;
 
-    Files ChechAndsaveImage(MultipartFile file) throws IOException;
+    Files ChechAndSaveImage(MultipartFile file) throws IOException;
 }
