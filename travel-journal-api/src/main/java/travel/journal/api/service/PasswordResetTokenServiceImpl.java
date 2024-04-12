@@ -1,16 +1,14 @@
 package travel.journal.api.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import travel.journal.api.entities.PasswordResetToken;
 import travel.journal.api.entities.User;
 import travel.journal.api.repositories.TokenRepository;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,11 +22,11 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         this.javaMailSender = javaMailSender;
     }
 
-
     @Override
     public void saveToken(PasswordResetToken passwordResetToken){
          tokenRepository.save(passwordResetToken);
     }
+
     @Override
     public PasswordResetToken findByToken(String token){
         return tokenRepository.findByToken(token);
@@ -47,7 +45,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
             msg.setSubject("Test");
             LocalDateTime dateTime = LocalDateTime.now().plusMinutes(30);
             String formattedTime = dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-            msg.setText("Hello " + user.getFirstName()+" "+user.getLastName()+ "\n\n" + "Please click on this link to reset your Password: " + resetLink+resetToken.getToken() + " . \n\n"+"This link will automatically expire on the hour: "+formattedTime);
+            msg.setText("Hello " + user.getFirstName() + " " + user.getLastName() + "\n\n" + "Please click on this link to reset your Password: " + resetLink+resetToken.getToken() + " . \n\n" + "This link will automatically expire on the hour: " + formattedTime);
 
             javaMailSender.send(msg);
             tokenRepository.save(resetToken);
@@ -56,7 +54,6 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
             e.printStackTrace();
             return false;
         }
-
     }
 
     @Override
@@ -76,6 +73,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         LocalDateTime currentDateTime = LocalDateTime.now();
         return expiryDateTime.isAfter(currentDateTime);
     }
+
     @Override
     public boolean canGenerateNewResetToken(User user) {
         List<PasswordResetToken> userTokens = user.getPasswordResetTokens();

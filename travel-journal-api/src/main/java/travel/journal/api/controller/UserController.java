@@ -78,18 +78,20 @@ public class UserController {
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<?> forgotPassordProcess(@RequestBody EmailResetPassword emailResetPassword) {
+    public ResponseEntity<?> forgotPasswordProcess(@RequestBody EmailResetPasswordDTO emailResetPassword) {
         Optional<User> user = userServiceImpl.findUserByEmail(emailResetPassword.getEmail());
         if(user.isEmpty()){
             return ResponseEntity.notFound().build();
         }
+
         boolean existTicket =passwordResetTokenService.canGenerateNewResetToken(user.get());
         if(!existTicket){
             return ResponseEntity.badRequest().body("Ai un ticket neutilizat");
         }
+
         User getuser=user.get();
-        boolean sendemail = passwordResetTokenService.sendEmail(getuser);
-        if (!sendemail) {
+        boolean sendEmail = passwordResetTokenService.sendEmail(getuser);
+        if (!sendEmail) {
             return ResponseEntity.internalServerError().body("Din pacate a fost o eroare la procesarea cererii.");
         }
         return ResponseEntity.ok().body("Un email ti-a fost trimis.");
@@ -109,7 +111,7 @@ public class UserController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> passwordResetProcess(@RequestBody ResetPassword resetPassword) {
+    public ResponseEntity<?> passwordResetProcess(@RequestBody ResetPasswordDTO resetPassword) {
         try {
             PasswordResetToken reset = passwordResetTokenService.findByToken(resetPassword.getToken());
 

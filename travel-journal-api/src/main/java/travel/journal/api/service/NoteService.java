@@ -14,8 +14,6 @@ import java.util.List;
 public interface NoteService {
     void save(int id, CreateNoteDTO createNoteDTO, List<MultipartFile> photos) throws IOException;
 
-    Note saveNoteAndGet(Note note);
-
     void save(Note note);
 
     LocalDate getParsedDate(String date);

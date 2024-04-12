@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmailResetPassword {
+public class EmailResetPasswordDTO {
     @NotBlank
     @Email
     private String email;

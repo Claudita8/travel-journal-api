@@ -1,5 +1,6 @@
 package travel.journal.api.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,9 +25,8 @@ public class NoteController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/saveNote/{traveljournalid}")
-    public ResponseEntity<?> saveNote(@PathVariable("traveljournalid") Integer id, @RequestPart("CreateNoteDTO") CreateNoteDTO createNoteDTO, @RequestParam("files") List<MultipartFile> files) throws IOException {
+    public ResponseEntity<?> saveNote(@PathVariable("traveljournalid") Integer id, @Valid @RequestPart("CreateNoteDTO") CreateNoteDTO createNoteDTO, @RequestParam("files") List<MultipartFile> files) throws IOException {
         noteService.save(id, createNoteDTO, files);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
 }

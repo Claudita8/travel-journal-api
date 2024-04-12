@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResetPassword {
+public class ResetPasswordDTO {
     @NotBlank
     private String token;
     @NotBlank

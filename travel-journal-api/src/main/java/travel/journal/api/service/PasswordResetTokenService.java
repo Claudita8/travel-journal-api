@@ -21,5 +21,4 @@ public interface PasswordResetTokenService {
     boolean hasValidResetToken(PasswordResetToken passwordResetToken);
 
     boolean isTokenUsedOrDateExpired(PasswordResetToken passwordResetToken);
-
 }

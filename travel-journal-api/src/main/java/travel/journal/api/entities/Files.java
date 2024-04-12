@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,7 +13,6 @@ import java.util.List;
 public class Files {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //Watch out if nullable or not
     @Column(name = "file_id")
     private int fileId;
 
@@ -37,4 +35,3 @@ public class Files {
     @ManyToMany(mappedBy = "photos", cascade = CascadeType.ALL)
     private List<Note> notesList;
 }
-
