@@ -2,7 +2,6 @@ package travel.journal.api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.List;
 
