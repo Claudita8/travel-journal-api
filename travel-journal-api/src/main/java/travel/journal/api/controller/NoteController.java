@@ -23,10 +23,16 @@ public class NoteController {
         this.noteService = noteService;
     }
 
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/saveNote/{traveljournalid}")
     public ResponseEntity<?> saveNote(@PathVariable("traveljournalid") Integer id, @Valid @RequestPart("CreateNoteDTO") CreateNoteDTO createNoteDTO, @RequestParam("files") List<MultipartFile> files) throws IOException {
         noteService.save(id, createNoteDTO, files);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/deleteNote/{id}")
+    ResponseEntity<Void> deleteNote(@PathVariable("id") int noteId) {
+        noteService.deleteNote(noteId);
+        return ResponseEntity.noContent().build();
     }
 }

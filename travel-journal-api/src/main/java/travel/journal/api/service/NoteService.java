@@ -17,4 +17,6 @@ public interface NoteService {
     LocalDate getParsedDate(String date);
 
     boolean checkDateIsInTravelJournalDateInterval(LocalDate date, TravelJournal travelJournal);
+
+    void deleteNote(Integer id);
 }

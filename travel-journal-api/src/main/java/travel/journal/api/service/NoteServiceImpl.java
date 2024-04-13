@@ -9,6 +9,7 @@ import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
 import travel.journal.api.exception.BadRequestException;
 import travel.journal.api.exception.ResourceNotFoundException;
+import travel.journal.api.repositories.FilesRepository;
 import travel.journal.api.repositories.NoteRepository;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -24,17 +25,37 @@ public class NoteServiceImpl implements NoteService  {
     private final FilesServiceImpl filesService;
 
     private final NoteRepository noteRepository;
+    private final FilesRepository filesRepository;
 
     private final UserService userService;
 
-    public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, UserService userService) {
+    public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, FilesRepository filesRepository, UserService userService) {
         this.travelService = travelService;
         this.filesService = filesService;
         this.noteRepository = noteRepository;
+        this.filesRepository = filesRepository;
         this.userService = userService;
     }
 
     @Override
+    public void deleteNote(Integer id) {
+        Optional<User> optionalUser = userService.getCurrentUser();
+        Optional<Note> optionalNote = noteRepository.findById(id);
+
+        if (optionalNote.isPresent() && optionalUser.isPresent()) {
+            User currentUser = optionalUser.get();
+            if (currentUser.equals(optionalNote.get().getTravelJournal().getUser())) {
+                Note noteToDelete = optionalNote.get();
+                filesRepository.deleteAll(noteToDelete.getPhotos());
+                noteRepository.delete(noteToDelete);
+            } else {
+                throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
+            }
+        } else {
+            throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
+        }
+    }
+
     public void save(int id, CreateNoteDTO createNoteDTO, List<MultipartFile> photos ) throws IOException {
         TravelJournal travelJournal = travelService.getTravelJournalById(id);
         Optional<User> user = userService.getCurrentUser();
