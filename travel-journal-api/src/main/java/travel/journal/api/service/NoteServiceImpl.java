@@ -1,25 +1,6 @@
 package travel.journal.api.service;
 
 import org.springframework.stereotype.Service;
-<<<<<<< HEAD
-import travel.journal.api.entities.Note;
-import travel.journal.api.entities.User;
-import travel.journal.api.exception.ResourceNotFoundException;
-import travel.journal.api.repositories.FilesRepository;
-import travel.journal.api.repositories.NotesRepository;
-
-import java.util.Optional;
-
-@Service
-public class NoteServiceImpl implements NoteService{
-    private final NotesRepository notesRepository;
-    private final FilesRepository filesRepository;
-    private final UserService userService;
-
-    public NoteServiceImpl(NotesRepository notesRepository, FilesRepository filesRepository, UserService userService) {
-        this.notesRepository = notesRepository;
-        this.filesRepository = filesRepository;
-=======
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.CreateNoteDTO;
 import travel.journal.api.entities.Files;
@@ -28,6 +9,7 @@ import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
 import travel.journal.api.exception.BadRequestException;
 import travel.journal.api.exception.ResourceNotFoundException;
+import travel.journal.api.repositories.FilesRepository;
 import travel.journal.api.repositories.NoteRepository;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -43,36 +25,37 @@ public class NoteServiceImpl implements NoteService  {
     private final FilesServiceImpl filesService;
 
     private final NoteRepository noteRepository;
+    private final FilesRepository filesRepository;
 
     private final UserService userService;
 
-    public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, UserService userService) {
+    public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, FilesRepository filesRepository, UserService userService) {
         this.travelService = travelService;
         this.filesService = filesService;
         this.noteRepository = noteRepository;
->>>>>>> dev-craiova
+        this.filesRepository = filesRepository;
         this.userService = userService;
     }
 
     @Override
-<<<<<<< HEAD
     public void deleteNote(Integer id) {
         Optional<User> optionalUser = userService.getCurrentUser();
-        Optional<Note> optionalNote = notesRepository.findById(id);
+        Optional<Note> optionalNote = noteRepository.findById(id);
 
-        if(optionalNote.isPresent() && optionalUser.isPresent()) {
-                User currentUser = optionalUser.get();
-                if(currentUser.equals(optionalNote.get().getTravelJournal().getUser())) {
-                    Note noteToDelete = optionalNote.get();
-                    filesRepository.deleteAll(noteToDelete.getFilesList());
-                    notesRepository.delete(noteToDelete);
-                } else {
-                    throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
-                }
+        if (optionalNote.isPresent() && optionalUser.isPresent()) {
+            User currentUser = optionalUser.get();
+            if (currentUser.equals(optionalNote.get().getTravelJournal().getUser())) {
+                Note noteToDelete = optionalNote.get();
+                filesRepository.deleteAll(noteToDelete.getPhotos());
+                noteRepository.delete(noteToDelete);
+            } else {
+                throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
+            }
         } else {
             throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
         }
-=======
+    }
+
     public void save(int id, CreateNoteDTO createNoteDTO, List<MultipartFile> photos ) throws IOException {
         TravelJournal travelJournal = travelService.getTravelJournalById(id);
         Optional<User> user = userService.getCurrentUser();
@@ -135,6 +118,5 @@ public class NoteServiceImpl implements NoteService  {
     }
     public boolean checkDateIsInTravelJournalDateInterval(LocalDate date, TravelJournal travelJournal){
         return travelJournal.getStartDate().isAfter(date)||travelJournal.getEndDate().isBefore(date);
->>>>>>> dev-craiova
     }
 }
