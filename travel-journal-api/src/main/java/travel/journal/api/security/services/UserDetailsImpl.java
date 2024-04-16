@@ -19,10 +19,13 @@ public class UserDetailsImpl implements UserDetails {
     private  int id;
     @JsonIgnore
     private String username;
+
     @JsonIgnore
     private String firstName;
+
     @JsonIgnore
     private String lastName;
+
     @JsonIgnore
     private String password;
 

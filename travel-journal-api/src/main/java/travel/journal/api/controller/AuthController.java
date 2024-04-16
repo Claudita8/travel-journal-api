@@ -11,16 +11,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import travel.journal.api.entities.User;
 import travel.journal.api.payload.request.LoginRequest;
 import travel.journal.api.payload.response.JwtResponse;
 import travel.journal.api.security.jwt.JwtUtils;
-import travel.journal.api.security.services.UserDetailsImpl;
 import travel.journal.api.service.UserService;
 
-import java.util.Optional;
+
 
 
 @RestController

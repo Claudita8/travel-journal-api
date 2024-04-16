@@ -20,7 +20,7 @@ import travel.journal.api.security.services.UserDetailsServiceImpl;
 
 @Configuration
 @EnableMethodSecurity
-public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
@@ -31,11 +31,6 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
-
-//  @Override
-//  public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-//    authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//  }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
