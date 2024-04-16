@@ -43,7 +43,7 @@ public class TravelJournal {
     private Files coverPhoto;
 
     @OneToMany(mappedBy = "travelJournal",cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("notesList")
+    @JsonIgnoreProperties("noteList")
     private List<Note> noteList;
 
     public TravelJournal(int travelId, User user, String location, LocalDate startDate, LocalDate endDate, double budget, String description, Boolean hasCoverPhoto, Files coverPhoto, List<Note> noteList) {
@@ -134,7 +134,7 @@ public class TravelJournal {
         this.coverPhoto = coverPhoto;
     }
 
-    public List<Note> getNotesList() {
+    public List<Note> getNoteList() {
         return noteList;
     }
 

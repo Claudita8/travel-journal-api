@@ -11,13 +11,12 @@ import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
-import travel.journal.api.exception.NoPermissionException;
-import travel.journal.api.exception.ResourceNotFoundException;
-import travel.journal.api.exception.UnauthorizedAccesException;
+import travel.journal.api.exception.*;
 import travel.journal.api.repositories.TravelJournalRepository;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,6 +44,21 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public TravelJournalDetailsDTO createTravelJournal(TravelJournalDTO travelJournalDTO, MultipartFile file) throws IOException {
         TravelJournal travelToCreate = modelMapper.map(travelJournalDTO, TravelJournal.class);
+
+        Optional<User> user = userService.getCurrentUser();
+        User currentUser = null;
+
+        if (user.isPresent()) {
+            currentUser = user.get();
+        }
+
+        if (travelRepository.existsByLocationAndUser(travelToCreate.getLocation(), currentUser)) {
+            throw new DuplicateTravelNameException("A card with the same name already exists");
+        }
+
+        if(!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())){
+            throw new InvalidDateRangeException("Start date must be before end date of the travel journal");
+        }
 
         Files createdFile = filesService.saveImage(file);
         travelToCreate.setCoverPhoto(createdFile);
@@ -79,43 +93,50 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public TravelJournalDetailsDTO modifyTravelJournal(Integer id, TravelJournalDTO travelJournalDTO, MultipartFile file) throws IOException {
         Optional<User> user = userService.getCurrentUser();
+
         User checkuser = null;
+
         if (user.isPresent()) {
             checkuser = user.get();
         }
 
         Optional<TravelJournal> existingTravelOptional = travelRepository.findById(id);
+
         if (existingTravelOptional.isPresent()) {
-            if (user.isPresent()) {
-                if (checkuser.equals(existingTravelOptional.get().getUser())) {
-                    TravelJournal existingTravel = existingTravelOptional.get();
-
-                    Files modifiedImage = filesService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
-
-                    existingTravel.setHasCoverPhoto(modifiedImage.getFileContent().length > 0);
-                    existingTravel.setCoverPhoto(modifiedImage);
-                    existingTravel.setBudget(travelJournalDTO.getBudget());
-                    existingTravel.setDescription(travelJournalDTO.getDescription());
-                    existingTravel.setLocation(travelJournalDTO.getLocation());
-                    existingTravel.setEndDate(travelJournalDTO.getEndDate());
-                    existingTravel.setStartDate(travelJournalDTO.getStartDate());
-                    existingTravel.setHasCoverPhoto(existingTravel.getHasCoverPhoto());
-                    existingTravel.setNotesList(existingTravel.getNotesList());
-
-                    TravelJournal modifiedTravel = travelRepository.save(existingTravel);
-
-                    return modelMapper.map(modifiedTravel, TravelJournalDetailsDTO.class);
-                } else {
-                    throw new UnauthorizedAccesException("Current user is not authorized to update this travel journal");
-                }
+            if (checkuser != existingTravelOptional.get().getUser()) {
+                throw new UnauthorizedAccesException("Current user is not authorized to update this travel journal");
             }
+            TravelJournal existingTravel = existingTravelOptional.get();
+
+            boolean isLocationChanged = !Objects.equals(existingTravel.getLocation(), travelJournalDTO.getLocation());
+
+            if (isLocationChanged && travelRepository.existsByLocationAndUser(travelJournalDTO.getLocation(), checkuser)) {
+                throw new DuplicateTravelNameException("A card with the same name already exists fot the current user");
+            }
+
+            if(!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())){
+                throw new InvalidDateRangeException("Start date must be before end date of the travel");
+            }
+
+            Files modifiedImage = filesService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
+
+            existingTravel.setHasCoverPhoto(modifiedImage.getFileContent().length > 0);
+            existingTravel.setCoverPhoto(modifiedImage);
+            existingTravel.setBudget(travelJournalDTO.getBudget());
+            existingTravel.setDescription(travelJournalDTO.getDescription());
+            existingTravel.setLocation(travelJournalDTO.getLocation());
+            existingTravel.setEndDate(travelJournalDTO.getEndDate());
+            existingTravel.setStartDate(travelJournalDTO.getStartDate());
+            existingTravel.setHasCoverPhoto(existingTravel.getHasCoverPhoto());
+            existingTravel.setNotesList(existingTravel.getNotesList());
+
+            TravelJournal modifiedTravel = travelRepository.save(existingTravel);
+
+            return modelMapper.map(modifiedTravel, TravelJournalDetailsDTO.class);
         } else {
             throw new ResourceNotFoundException("Travel with id: " + id + " does not exist");
         }
-        return null;
     }
-
-
     @Override
     public void deleteTravelJournal(Integer id) {
         Optional<User> user = userService.getCurrentUser();
@@ -153,6 +174,11 @@ public class TravelServiceImpl implements TravelService {
             dto.setNotesNumber(notesNumber);
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public TravelJournal getTravelJournalById(int id) {
+        return travelRepository.findById(id).orElse(null);
     }
 }
 
