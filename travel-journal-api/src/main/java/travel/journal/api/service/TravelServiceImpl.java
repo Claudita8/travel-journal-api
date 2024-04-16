@@ -128,7 +128,7 @@ public class TravelServiceImpl implements TravelService {
             existingTravel.setEndDate(travelJournalDTO.getEndDate());
             existingTravel.setStartDate(travelJournalDTO.getStartDate());
             existingTravel.setHasCoverPhoto(existingTravel.getHasCoverPhoto());
-            existingTravel.setNotesList(existingTravel.getNotesList());
+            existingTravel.setNotesList(existingTravel.getNoteList());
 
             TravelJournal modifiedTravel = travelRepository.save(existingTravel);
 
@@ -170,7 +170,7 @@ public class TravelServiceImpl implements TravelService {
         List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(user.getUserId());
         return userTravels.stream().map(travelJournal -> {
             CardTravelJournalDTO dto = modelMapper.map(travelJournal, CardTravelJournalDTO.class);
-            int notesNumber = travelJournal.getNotesList().size();
+            int notesNumber = travelJournal.getNoteList().size();
             dto.setNotesNumber(notesNumber);
             return dto;
         }).collect(Collectors.toList());

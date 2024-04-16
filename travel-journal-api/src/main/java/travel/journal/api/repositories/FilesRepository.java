@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface FilesRepository extends JpaRepository<Files, Integer >{
     Files findByFileName(String fileName);
-    @Query("SELECT f FROM Files f JOIN f.notesList nf WHERE nf.noteId = :noteId")
-    List<Files> findByNoteId(Integer noteId);
+//    @Query("SELECT f FROM Files f JOIN f.notesList nf WHERE nf.noteId = :noteId")
+//    List<Files> findByNoteId(Integer noteId);
 }

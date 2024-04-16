@@ -1,16 +1,13 @@
 package travel.journal.api.service;
 
 
-import org.springframework.ui.Model;
-import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import travel.journal.api.security.services.UserDetailsImpl;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.CreateNoteDTO;
+import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.Note;
 import travel.journal.api.entities.TravelJournal;
@@ -19,8 +16,8 @@ import travel.journal.api.exception.BadRequestException;
 import travel.journal.api.exception.ResourceNotFoundException;
 import travel.journal.api.repositories.FilesRepository;
 import travel.journal.api.repositories.NoteRepository;
+import travel.journal.api.security.services.UserDetailsImpl;
 
-import javax.management.modelmbean.ModelMBeanInfo;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -142,7 +139,8 @@ public class NoteServiceImpl implements NoteService  {
         if (note == null)
             throw new ResourceNotFoundException("");
 
-        List<Files> filesList = fileRepository.findByNoteId(noteId);
+        List<Files> filesList = note.getPhotos();
+                //fileRepository.findByNoteId(noteId);
 
         NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
         noteDetailsDTO.setDate(getFormattedDate(note.getDate()));

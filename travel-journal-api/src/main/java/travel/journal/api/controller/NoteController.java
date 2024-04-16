@@ -7,9 +7,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.CreateNoteDTO;
-import travel.journal.api.service.NoteService;
+import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
 import travel.journal.api.service.NoteServiceImpl;
-
 import java.io.IOException;
 import java.util.List;
 
