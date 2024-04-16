@@ -7,14 +7,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.CreateNoteDTO;
-
+import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
 import travel.journal.api.service.NoteServiceImpl;
-
 import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/note")
+@RequestMapping("/travel-journal")
 public class NoteController {
 
     private final NoteServiceImpl noteService;
@@ -34,5 +33,11 @@ public class NoteController {
     ResponseEntity<Void> deleteNote(@PathVariable("id") int noteId) {
         noteService.deleteNote(noteId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/travel/{travelId}/view-note/{noteId}")
+    public NoteDetailsDTO getNoteDetails(@PathVariable int travelId, @PathVariable int noteId) {
+        return noteService.getNoteDetails(travelId, noteId);
     }
 }

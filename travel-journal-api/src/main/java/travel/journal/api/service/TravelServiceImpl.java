@@ -6,6 +6,7 @@ import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
+import travel.journal.api.dto.travelJournal.outbound.CardTravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.TravelJournal;
@@ -127,7 +128,7 @@ public class TravelServiceImpl implements TravelService {
             existingTravel.setEndDate(travelJournalDTO.getEndDate());
             existingTravel.setStartDate(travelJournalDTO.getStartDate());
             existingTravel.setHasCoverPhoto(existingTravel.getHasCoverPhoto());
-            existingTravel.setNotesList(existingTravel.getNotesList());
+            existingTravel.setNotesList(existingTravel.getNoteList());
 
             TravelJournal modifiedTravel = travelRepository.save(existingTravel);
 
@@ -163,9 +164,16 @@ public class TravelServiceImpl implements TravelService {
 
 
     @Override
-    public List<TravelJournalDetailsDTO> getUserTravelJournal(int userId) {
-        List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(userId);
-        return userTravels.stream().map(travelJournal -> modelMapper.map(travelJournal, TravelJournalDetailsDTO.class)).collect(Collectors.toList());
+    public List<CardTravelJournalDTO> getUserTravelJournals() {
+        User user = userService.getCurrentUser().orElseThrow(() -> new UnauthorizedAccesException("Current user is not authorized to get this travel journal"));
+
+        List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(user.getUserId());
+        return userTravels.stream().map(travelJournal -> {
+            CardTravelJournalDTO dto = modelMapper.map(travelJournal, CardTravelJournalDTO.class);
+            int notesNumber = travelJournal.getNoteList().size();
+            dto.setNotesNumber(notesNumber);
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @Override

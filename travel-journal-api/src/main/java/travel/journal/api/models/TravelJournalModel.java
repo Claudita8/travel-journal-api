@@ -1,6 +1,8 @@
 package travel.journal.api.models;
 
 import lombok.Data;
+import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,5 +18,5 @@ public class TravelJournalModel {
     private String description;
     private Boolean hasCoverPhoto;
     private FilesModel coverPhoto;
-    private List<NotesModel> notesList;
+    private List<NoteDetailsDTO> notesList;
  }

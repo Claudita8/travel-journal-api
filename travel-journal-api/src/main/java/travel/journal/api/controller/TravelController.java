@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
+import travel.journal.api.dto.travelJournal.outbound.CardTravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
 import travel.journal.api.security.services.UserDetailsImpl;
 import travel.journal.api.service.TravelServiceImpl;
@@ -51,10 +52,9 @@ public class TravelController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/myTravels/{userId}")
-    public ResponseEntity<List<TravelJournalDetailsDTO>> getUserTravels(@PathVariable("userId") int userId) {
-        List<TravelJournalDetailsDTO> userTravelJournals = travelServiceImpl.getUserTravelJournal(userId);
-
+    @GetMapping("/my-travels")
+    public ResponseEntity<List<CardTravelJournalDTO>> getUserTravels() {
+        List<CardTravelJournalDTO> userTravelJournals = travelServiceImpl.getUserTravelJournals();
         return ResponseEntity.ok(userTravelJournals);
     }
 

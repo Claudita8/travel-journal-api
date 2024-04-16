@@ -1,8 +1,13 @@
 package travel.journal.api.service;
 
+
+import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.CreateNoteDTO;
+import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.Note;
 import travel.journal.api.entities.TravelJournal;
@@ -11,6 +16,8 @@ import travel.journal.api.exception.BadRequestException;
 import travel.journal.api.exception.ResourceNotFoundException;
 import travel.journal.api.repositories.FilesRepository;
 import travel.journal.api.repositories.NoteRepository;
+import travel.journal.api.security.services.UserDetailsImpl;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,20 +28,20 @@ import java.util.Optional;
 @Service
 public class NoteServiceImpl implements NoteService  {
     private final TravelService travelService;
-
     private final FilesServiceImpl filesService;
-
+    private final ModelMapper modelMapper;
     private final NoteRepository noteRepository;
     private final FilesRepository filesRepository;
 
     private final UserService userService;
 
-    public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, FilesRepository filesRepository, UserService userService) {
+    public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, FilesRepository filesRepository, UserService userService, ModelMapper modelMapper) {
         this.travelService = travelService;
         this.filesService = filesService;
         this.noteRepository = noteRepository;
         this.filesRepository = filesRepository;
         this.userService = userService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -118,5 +125,31 @@ public class NoteServiceImpl implements NoteService  {
     }
     public boolean checkDateIsInTravelJournalDateInterval(LocalDate date, TravelJournal travelJournal){
         return travelJournal.getStartDate().isAfter(date)||travelJournal.getEndDate().isBefore(date);
+    }
+
+    public NoteDetailsDTO getNoteDetails(int travelId, int noteId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        Integer userId;
+        UserDetailsImpl userDetails = (UserDetailsImpl) principal;
+        userId = userDetails.getId();
+
+        Note note = noteRepository.findByTravelJournal_User_UserIdAndTravelJournal_TravelIdAndNoteId(userId,travelId,noteId);
+        if (note == null)
+            throw new ResourceNotFoundException("");
+
+        List<Files> filesList = note.getPhotos();
+                //fileRepository.findByNoteId(noteId);
+
+        NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
+        noteDetailsDTO.setDate(getFormattedDate(note.getDate()));
+        noteDetailsDTO.setFilesList(filesList);
+
+        return noteDetailsDTO;
+    }
+
+    private String getFormattedDate(LocalDate date){
+        return String.format("%s/%s/%s",date.getDayOfMonth(), date.getMonthValue(),date.getYear());
     }
 }

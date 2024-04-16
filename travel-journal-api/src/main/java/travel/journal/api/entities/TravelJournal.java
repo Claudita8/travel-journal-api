@@ -1,7 +1,8 @@
 package travel.journal.api.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -42,10 +43,10 @@ public class TravelJournal {
     private Files coverPhoto;
 
     @OneToMany(mappedBy = "travelJournal",cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Note> notesList;
+    @JsonIgnoreProperties("noteList")
+    private List<Note> noteList;
 
-    public TravelJournal(int travelId, User user, String location, LocalDate startDate, LocalDate endDate, double budget, String description, Boolean hasCoverPhoto, Files coverPhoto, List<Note> notesList) {
+    public TravelJournal(int travelId, User user, String location, LocalDate startDate, LocalDate endDate, double budget, String description, Boolean hasCoverPhoto, Files coverPhoto, List<Note> noteList) {
         this.travelId = travelId;
         this.user = user;
         this.location = location;
@@ -55,7 +56,7 @@ public class TravelJournal {
         this.description = description;
         this.hasCoverPhoto = hasCoverPhoto;
         this.coverPhoto = coverPhoto;
-        this.notesList = notesList;
+        this.noteList = noteList;
     }
 
     public TravelJournal() {
@@ -133,12 +134,12 @@ public class TravelJournal {
         this.coverPhoto = coverPhoto;
     }
 
-    public List<Note> getNotesList() {
-        return notesList;
+    public List<Note> getNoteList() {
+        return noteList;
     }
 
-    public void setNotesList(List<Note> notesList) {
-        this.notesList = notesList;
+    public void setNotesList(List<Note> noteList) {
+        this.noteList = noteList;
     }
 
 }
