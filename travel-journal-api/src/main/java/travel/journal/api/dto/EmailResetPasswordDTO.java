@@ -1,5 +1,6 @@
 package travel.journal.api.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,9 +11,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateUserDTO {
+public class EmailResetPasswordDTO {
     @NotBlank
-    private String firstname;
-    @NotBlank
-    private String lastname;
+    @Email
+    private String email;
 }

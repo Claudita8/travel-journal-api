@@ -13,7 +13,6 @@ import java.util.List;
 public class Files {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //Watch out if nullable or not
     @Column(name = "file_id")
     private int fileId;
 
@@ -33,13 +32,6 @@ public class Files {
     @JsonIgnore
     private List<TravelJournal> travelJournalList;
 
-    @ManyToMany
-    @JoinTable(
-            name = "notes_files",
-            joinColumns = @JoinColumn(name = "file_id"),
-            inverseJoinColumns = @JoinColumn(name = "note_id")
-    )
-    private List<Notes> notesList;
-
+    @ManyToMany(mappedBy = "photos", cascade = CascadeType.ALL)
+    private List<Note> notesList;
 }
-
