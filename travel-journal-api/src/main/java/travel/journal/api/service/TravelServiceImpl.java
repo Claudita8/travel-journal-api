@@ -148,8 +148,6 @@ public class TravelServiceImpl implements TravelService {
         if (travelOptional.isPresent()) {
             if (user.isPresent()) {
                 if (checkuser.equals(travelOptional.get().getUser())) {
-                    TravelJournal travelToDelete = travelOptional.get();
-                    filesService.deleteImage(travelToDelete.getCoverPhoto().getFileId());
                     travelRepository.deleteById(id);
 
                 } else {
