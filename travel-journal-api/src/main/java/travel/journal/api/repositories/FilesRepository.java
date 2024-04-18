@@ -9,9 +9,8 @@ import java.util.List;
 
 @Repository
 
-public interface FilesRepository extends JpaRepository<Files, Integer> {
-
-    @Query("SELECT f FROM Files f JOIN f.notesList nf WHERE nf.noteId = :noteId")
-    List<Files> findByNoteId(Integer noteId);
-
+public interface FilesRepository extends JpaRepository<Files, Integer >{
+    Files findByFileName(String fileName);
+//    @Query("SELECT f FROM Files f JOIN f.notesList nf WHERE nf.noteId = :noteId")
+//    List<Files> findByNoteId(Integer noteId);
 }

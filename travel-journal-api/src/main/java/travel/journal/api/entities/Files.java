@@ -27,19 +27,4 @@ public class Files {
 
     @Column(name = "created_date")
     private LocalDate createdDate;
-
-    @OneToMany(mappedBy = "coverPhoto", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<TravelJournal> travelJournalList;
-
-    @ManyToMany
-    @JsonIgnore
-    @JoinTable(
-            name = "notes_files",
-            joinColumns = @JoinColumn(name = "file_id"),
-            inverseJoinColumns = @JoinColumn(name = "note_id")
-    )
-    private List<Note> notesList;
-
 }
-
