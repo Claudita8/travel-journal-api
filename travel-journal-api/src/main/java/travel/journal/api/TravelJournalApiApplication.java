@@ -4,16 +4,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import travel.journal.api.security.jwt.Password_Encoder;
 
-
 @SpringBootApplication
 @EnableWebMvc
-@EnableScheduling
+@EnableJpaRepositories
 public class TravelJournalApiApplication {
 
     public static void main(String[] args) {
@@ -26,7 +25,7 @@ public class TravelJournalApiApplication {
     }
 
     @Bean
-    public Password_Encoder password_Encoder(){
+    public Password_Encoder password_Encoder() {
         return new Password_Encoder();
     }
 

@@ -32,6 +32,14 @@ public class Files {
     @JsonIgnore
     private List<TravelJournal> travelJournalList;
 
-    @ManyToMany(mappedBy = "photos", cascade = CascadeType.ALL)
+    @ManyToMany
+    @JsonIgnore
+    @JoinTable(
+            name = "notes_files",
+            joinColumns = @JoinColumn(name = "file_id"),
+            inverseJoinColumns = @JoinColumn(name = "note_id")
+    )
     private List<Note> notesList;
+
 }
+

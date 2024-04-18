@@ -1,22 +1,7 @@
 package travel.journal.api.service;
 
-import org.springframework.web.multipart.MultipartFile;
-import travel.journal.api.dto.CreateNoteDTO;
-import travel.journal.api.entities.Note;
-import travel.journal.api.entities.TravelJournal;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
+import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
 
 public interface NoteService {
-    void save(int id, CreateNoteDTO createNoteDTO, List<MultipartFile> photos) throws IOException;
-
-    void save(Note note);
-
-    LocalDate getParsedDate(String date);
-
-    boolean checkDateIsInTravelJournalDateInterval(LocalDate date, TravelJournal travelJournal);
-
-    void deleteNote(Integer id);
+    NoteDetailsDTO getNoteDetails(int travelId, int noteId);
 }
