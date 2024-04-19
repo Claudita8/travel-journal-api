@@ -36,7 +36,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     public boolean sendEmail(User user) {
         try {
             PasswordResetToken resetToken=generateResetToken(user);
-            String resetLink = "http://localhost:8080/api/user/resetPassword/";
+            String resetLink = "http://localhost:5173/resetPassword?token=";
 
             SimpleMailMessage msg = new SimpleMailMessage();
             msg.setFrom("noreply@stancuf.ro");
