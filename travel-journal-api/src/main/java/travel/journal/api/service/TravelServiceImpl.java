@@ -56,7 +56,7 @@ public class TravelServiceImpl implements TravelService {
             throw new DuplicateTravelNameException("A card with the same name already exists");
         }
 
-        if(!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())){
+        if (!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())) {
             throw new InvalidDateRangeException("Start date must be before end date of the travel journal");
         }
 
@@ -114,7 +114,7 @@ public class TravelServiceImpl implements TravelService {
                 throw new DuplicateTravelNameException("A card with the same name already exists fot the current user");
             }
 
-            if(!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())){
+            if (!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())) {
                 throw new InvalidDateRangeException("Start date must be before end date of the travel");
             }
 
@@ -137,6 +137,7 @@ public class TravelServiceImpl implements TravelService {
             throw new ResourceNotFoundException("Travel with id: " + id + " does not exist");
         }
     }
+
     @Override
     public void deleteTravelJournal(Integer id) {
         Optional<User> user = userService.getCurrentUser();
@@ -170,8 +171,8 @@ public class TravelServiceImpl implements TravelService {
         List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(user.getUserId());
         return userTravels.stream().map(travelJournal -> {
             CardTravelJournalDTO dto = modelMapper.map(travelJournal, CardTravelJournalDTO.class);
-            int notesNumber = travelJournal.getNoteList().size();
-            dto.setNotesNumber(notesNumber);
+            dto.setCoverPhotoId(travelJournal.getCoverPhoto().getFileId());
+            dto.setNotesNumber(travelJournal.getNoteList().size());
             return dto;
         }).collect(Collectors.toList());
     }

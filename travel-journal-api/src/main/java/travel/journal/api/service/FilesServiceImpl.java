@@ -1,5 +1,6 @@
 package travel.journal.api.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.entities.Files;
@@ -11,12 +12,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
-public class FilesServiceImpl implements FileService{
+@RequiredArgsConstructor
+public class FilesServiceImpl implements FileService {
 
     private final FilesRepository filesRepository;
-    public FilesServiceImpl(FilesRepository filesRepository) {
-        this.filesRepository = filesRepository;
-    }
 
     @Override
     public Files saveImage(MultipartFile file) throws IOException {
@@ -30,13 +29,12 @@ public class FilesServiceImpl implements FileService{
         return filesRepository.save(fileToCreate);
     }
 
-    public void deleteImage(int id){
-       if(filesRepository.existsById(id)){
-           filesRepository.deleteById(id);
-       }
-       else{
-           throw new ResourceNotFoundException("File with id: " + id + " does not exist");
-       }
+    public void deleteImage(int id) {
+        if (filesRepository.existsById(id)) {
+            filesRepository.deleteById(id);
+        } else {
+            throw new ResourceNotFoundException("File with id: " + id + " does not exist");
+        }
     }
 
     public Files modifyImage(int id, MultipartFile file) throws IOException {
@@ -52,9 +50,8 @@ public class FilesServiceImpl implements FileService{
             existingFile.setCreatedDate(LocalDate.now());
 
             return filesRepository.save(existingFile);
-        }
-        else{
-           return this.saveImage(file);
+        } else {
+            return this.saveImage(file);
         }
     }
 
@@ -67,5 +64,9 @@ public class FilesServiceImpl implements FileService{
         } else {
             return saveImage(file);
         }
+    }
+
+    public Files getImageById(int id) {
+        return filesRepository.findById(id).orElse(null);
     }
 }
