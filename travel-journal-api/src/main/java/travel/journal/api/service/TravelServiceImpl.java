@@ -36,7 +36,7 @@ public class TravelServiceImpl implements TravelService {
         this.modelMapper.addMappings(new PropertyMap<TravelJournal, TravelJournalDetailsDTO>() {
             @Override
             protected void configure() {
-                map().setCoverPhoto(source.getCoverPhoto());
+                map().setCoverPhotoId(source.getCoverPhoto().getFileId());
             }
         });
     }
