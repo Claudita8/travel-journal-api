@@ -17,9 +17,9 @@ import java.util.UUID;
 public class PasswordResetTokenServiceImpl implements PasswordResetTokenService {
     private final TokenRepository tokenRepository;
     private final JavaMailSender javaMailSender;
-    @Value("${localHostLink}")
-    private String localHostLink;
-    @Value("${senderEmail}")
+    @Value("${travel-journal.appBaseUrl}")
+    private String appBaseUrl;
+    @Value("${spring.mail.username}")
     private String senderEmail;
 
     public PasswordResetTokenServiceImpl(TokenRepository tokenRepository, JavaMailSender javaMailSender) {
@@ -41,7 +41,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     public boolean sendEmail(User user) {
         try {
             PasswordResetToken resetToken=generateResetToken(user);
-            String resetLink = localHostLink + "/resetPassword?token=";
+            String resetLink = appBaseUrl + "/resetPassword?token=";
 
             SimpleMailMessage msg = new SimpleMailMessage();
             msg.setFrom(senderEmail);
