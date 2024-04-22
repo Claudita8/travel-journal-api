@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.CardTravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
-import travel.journal.api.entities.Files;
+import travel.journal.api.entities.File;
 import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
 import travel.journal.api.exception.*;
@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 public class TravelServiceImpl implements TravelService {
 
     private final TravelJournalRepository travelRepository;
-    private final FilesServiceImpl filesService;
+    private final FileServiceImpl filesService;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-    public TravelServiceImpl(TravelJournalRepository travelRepository, FilesServiceImpl filesService, UserService userService, ModelMapper modelMapper) {
+    public TravelServiceImpl(TravelJournalRepository travelRepository, FileServiceImpl filesService, UserService userService, ModelMapper modelMapper) {
         this.travelRepository = travelRepository;
         this.filesService = filesService;
         this.userService = userService;
@@ -60,7 +60,7 @@ public class TravelServiceImpl implements TravelService {
             throw new InvalidDateRangeException("Start date must be before end date of the travel journal");
         }
 
-        Files createdFile = filesService.saveImage(file);
+        File createdFile = filesService.saveImage(file);
         travelToCreate.setCoverPhoto(createdFile);
         travelToCreate.setHasCoverPhoto(createdFile.getFileContent().length > 0);
 
@@ -118,7 +118,7 @@ public class TravelServiceImpl implements TravelService {
                 throw new InvalidDateRangeException("Start date must be before end date of the travel");
             }
 
-            Files modifiedImage = filesService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
+            File modifiedImage = filesService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
 
             existingTravel.setHasCoverPhoto(modifiedImage.getFileContent().length > 0);
             existingTravel.setCoverPhoto(modifiedImage);

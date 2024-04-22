@@ -2,7 +2,7 @@ package travel.journal.api.mapper;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import travel.journal.api.entities.Files;
+import travel.journal.api.entities.File;
 import travel.journal.api.models.FilesModel;
 @Component
 public class FilesMapper {
@@ -12,11 +12,11 @@ public class FilesMapper {
         this.modelMapper = new ModelMapper();
     }
 
-    public FilesModel toFilesModel(Files filesEntity) {
-        return modelMapper.map(filesEntity, FilesModel.class);
+    public FilesModel toFilesModel(File fileEntity) {
+        return modelMapper.map(fileEntity, FilesModel.class);
     }
 
-    public Files toFilesEntity(FilesModel filesModel) {
-        return modelMapper.map(filesModel, Files.class);
+    public File toFilesEntity(FilesModel filesModel) {
+        return modelMapper.map(filesModel, File.class);
     }
 }

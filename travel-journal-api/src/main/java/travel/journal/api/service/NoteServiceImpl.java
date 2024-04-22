@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.CreateNoteDTO;
 import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
-import travel.journal.api.entities.Files;
+import travel.journal.api.entities.File;
 import travel.journal.api.entities.Note;
 import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
@@ -28,14 +28,14 @@ import java.util.Optional;
 @Service
 public class NoteServiceImpl implements NoteService  {
     private final TravelService travelService;
-    private final FilesServiceImpl filesService;
+    private final FileServiceImpl filesService;
     private final ModelMapper modelMapper;
     private final NoteRepository noteRepository;
     private final FilesRepository filesRepository;
 
     private final UserService userService;
 
-    public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, FilesRepository filesRepository, UserService userService, ModelMapper modelMapper) {
+    public NoteServiceImpl(TravelService travelService, FileServiceImpl filesService, NoteRepository noteRepository, FilesRepository filesRepository, UserService userService, ModelMapper modelMapper) {
         this.travelService = travelService;
         this.filesService = filesService;
         this.noteRepository = noteRepository;
@@ -104,9 +104,9 @@ public class NoteServiceImpl implements NoteService  {
         note.setDestinationName(createNoteDTO.getDestinationName());
         note.setTravelJournal(travelJournal);
 
-        List<Files> files = new ArrayList<>();
+        List<File> files = new ArrayList<>();
         for(MultipartFile photo:photos){
-            Files file = filesService.CheckAndSaveImage(photo);
+            File file = filesService.CheckAndSaveImage(photo);
             files.add(file);
         }
         note.setPhotos(files);
@@ -139,12 +139,12 @@ public class NoteServiceImpl implements NoteService  {
         if (note == null)
             throw new ResourceNotFoundException("");
 
-        List<Files> filesList = note.getPhotos();
+        List<File> fileList = note.getPhotos();
                 //fileRepository.findByNoteId(noteId);
 
         NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
         noteDetailsDTO.setDate(getFormattedDate(note.getDate()));
-        noteDetailsDTO.setFilesList(filesList);
+        noteDetailsDTO.setFileList(fileList);
 
         return noteDetailsDTO;
     }

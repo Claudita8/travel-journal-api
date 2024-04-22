@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import travel.journal.api.entities.Files;
+import travel.journal.api.entities.File;
 import travel.journal.api.service.FileService;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +26,7 @@ public class FileController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("image/{imageId}")
     public ResponseEntity<byte[]> getImage(@PathVariable int imageId) {
-        Files image = fileService.getImageById(imageId);
+        File image = fileService.getImageById(imageId);
         if (image == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Entity
 @Data
 @Table(name = "\"files\"")
-public class Files {
+public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_id")
