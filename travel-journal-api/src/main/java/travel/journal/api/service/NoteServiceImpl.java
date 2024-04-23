@@ -46,9 +46,9 @@ public class NoteServiceImpl implements NoteService  {
     }
 
     @Override
-    public void deleteNote(Integer id) {
+    public void deleteNote(Integer noteId) {
         Optional<User> optionalUser = userService.getCurrentUser();
-        Optional<Note> optionalNote = noteRepository.findById(id);
+        Optional<Note> optionalNote = noteRepository.findById(noteId);
 
         if (optionalNote.isPresent() && optionalUser.isPresent()) {
             User currentUser = optionalUser.get();
@@ -57,22 +57,20 @@ public class NoteServiceImpl implements NoteService  {
                 filesRepository.deleteAll(noteToDelete.getPhotos());
                 noteRepository.delete(noteToDelete);
             } else {
-                throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
+                throw new ResourceNotFoundException("Note with id: " + noteId + " does not exist");
             }
         } else {
-            throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
+            throw new ResourceNotFoundException("Note with id: " + noteId + " does not exist");
         }
     }
 
-    public void save(int id, CreateNoteDTO createNoteDTO, List<MultipartFile> photos ) throws IOException {
+    public void save(int travelId, CreateNoteDTO createNoteDTO, List<MultipartFile> photos ) throws IOException {
         Optional<User> user = userService.getCurrentUser();
-        TravelJournal travelJournal = travelService.findByUserUserIdAndTravelId(user.get().getUserId(), id);
+        TravelJournal travelJournal = travelService.findByUserUserIdAndTravelId(user.get().getUserId(), travelId);
 
         if(travelJournal == null){
             throw new ResourceNotFoundException("");
         }
-
-
 
         if(photos.size() == 1){
             MultipartFile photo = photos.get(0);
@@ -146,13 +144,13 @@ public class NoteServiceImpl implements NoteService  {
     }
 
     public void editNote(int travelJournalId, int noteId, CreateNoteDTO createNoteDTO, List<MultipartFile> photos) throws IOException {
-        TravelJournal travelJournal = travelService.getTravelJournalById(travelJournalId);
         Optional<User> user = userService.getCurrentUser();
-        Optional<Note> optionalNote = noteRepository.findById(noteId);
-
-        if (!optionalNote.isPresent() || user.get().getUserId()!=travelJournal.getUser().getUserId()) {
+        Note note = noteRepository
+                .findByTravelJournal_User_UserIdAndTravelJournal_TravelIdAndNoteId(user.get().getUserId(), travelJournalId, noteId);
+        if (note == null) {
             throw new ResourceNotFoundException("");
         }
+        TravelJournal travelJournal = note.getTravelJournal();
 
         if (createNoteDTO.getDestinationName() == null || createNoteDTO.getDestinationName().isEmpty()) {
             throw new BadRequestException("Destination name is required.");
@@ -182,7 +180,6 @@ public class NoteServiceImpl implements NoteService  {
             throw new BadRequestException("The specified date is outside the range of the travel journal.");
         }
 
-        Note note = optionalNote.get();
         note.setDate(getParsedDate(createNoteDTO.getDate()));
         note.setDescription(createNoteDTO.getDescription());
         note.setDestinationName(createNoteDTO.getDestinationName());
