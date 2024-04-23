@@ -42,8 +42,8 @@ public class NoteController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("/editNote/{traveljournalId}/{noteId}")
-    public ResponseEntity<?> editNote(@PathVariable("traveljournalId") Integer id,@PathVariable("noteId") Integer noteId, @Valid @RequestPart("CreateNoteDTO") CreateNoteDTO createNoteDTO, @RequestParam("files") List<MultipartFile> files) throws IOException {
+    @PutMapping("/travels/{travelId}/notes/{noteId}")
+    public ResponseEntity<?> editNote(@PathVariable("travelId") Integer id, @PathVariable("noteId") Integer noteId, @Valid @RequestPart("CreateNoteDTO") CreateNoteDTO createNoteDTO, @RequestParam("files") List<MultipartFile> files) throws IOException {
         noteService.editNote(id, noteId, createNoteDTO, files);
         return ResponseEntity.ok().build();
     }

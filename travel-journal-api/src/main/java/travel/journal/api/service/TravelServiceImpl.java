@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.CardTravelJournalDTO;
+import travel.journal.api.dto.travelJournal.outbound.NoteEntryDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
 import travel.journal.api.entities.Files;
 import travel.journal.api.entities.TravelJournal;
@@ -79,7 +80,13 @@ public class TravelServiceImpl implements TravelService {
     public TravelJournalDetailsDTO getTravelJournal(Integer id, Integer userId) {
         TravelJournal travel = travelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Travel with id: " + id + " does not exist"));
         if (travel.getUser().getUserId() == userId) {
-            return modelMapper.map(travel, TravelJournalDetailsDTO.class);
+            TravelJournalDetailsDTO travelJournalDetailsDTO = modelMapper.map(travel, TravelJournalDetailsDTO.class);
+            List<NoteEntryDTO> noteEntryDTOList = travel.getNoteList().stream()
+                    .map(note -> modelMapper.map(note, NoteEntryDTO.class))
+                    .collect(Collectors.toList());
+            travelJournalDetailsDTO.setNotesList(noteEntryDTOList);
+            travelJournalDetailsDTO.setNotesNumber(noteEntryDTOList.size());
+            return travelJournalDetailsDTO;
         }
         throw new NoPermissionException("No permission for travel with id: " + id);
     }
@@ -180,6 +187,12 @@ public class TravelServiceImpl implements TravelService {
     public TravelJournal getTravelJournalById(int id) {
         return travelRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public TravelJournal findByUserUserIdAndTravelId(int userId, int travelId){
+        return travelRepository.findByUserUserIdAndTravelId(userId, travelId);
+    }
+
 }
 
 

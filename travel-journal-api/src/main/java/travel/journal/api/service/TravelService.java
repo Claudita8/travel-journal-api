@@ -27,5 +27,6 @@ public interface TravelService {
 
     TravelJournal getTravelJournalById(int id);
     List<CardTravelJournalDTO> getUserTravelJournals();
+    TravelJournal findByUserUserIdAndTravelId(int userId, int travelId);
 }
 

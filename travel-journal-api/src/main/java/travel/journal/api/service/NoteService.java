@@ -3,6 +3,7 @@ package travel.journal.api.service;
 import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.CreateNoteDTO;
+import travel.journal.api.entities.Files;
 import travel.journal.api.entities.Note;
 import travel.journal.api.entities.TravelJournal;
 
@@ -22,4 +23,9 @@ public interface NoteService {
     boolean checkDateIsInTravelJournalDateInterval(LocalDate date, TravelJournal travelJournal);
 
     void deleteNote(Integer id);
+
+    List<Files> photosToErase(List<Files> notePhotos, List<MultipartFile> photosToEdit);
+
+    List<Files>  photosToSave(List<MultipartFile> photos) throws IOException;
+
 }

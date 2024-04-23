@@ -13,4 +13,5 @@ public interface TravelJournalRepository extends JpaRepository<TravelJournal, In
     List<TravelJournal> findByUserUserIdOrderByStartDateDesc(int userId);
 
     boolean existsByLocationAndUser(String location, User user);
+    TravelJournal findByUserUserIdAndTravelId(int userId, int travelId);
 }

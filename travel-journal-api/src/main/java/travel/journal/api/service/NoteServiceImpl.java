@@ -18,6 +18,7 @@ import travel.journal.api.repositories.FilesRepository;
 import travel.journal.api.repositories.NoteRepository;
 import travel.journal.api.security.services.UserDetailsImpl;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -33,7 +34,6 @@ public class NoteServiceImpl implements NoteService  {
     private final ModelMapper modelMapper;
     private final NoteRepository noteRepository;
     private final FilesRepository filesRepository;
-
     private final UserService userService;
 
     public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, FilesRepository filesRepository, UserService userService, ModelMapper modelMapper) {
@@ -65,19 +65,13 @@ public class NoteServiceImpl implements NoteService  {
     }
 
     public void save(int id, CreateNoteDTO createNoteDTO, List<MultipartFile> photos ) throws IOException {
-        TravelJournal travelJournal = travelService.getTravelJournalById(id);
         Optional<User> user = userService.getCurrentUser();
+        TravelJournal travelJournal = travelService.findByUserUserIdAndTravelId(user.get().getUserId(), id);
 
         if(travelJournal == null){
-            throw new BadRequestException("Travel with id: " + id + " does not exist");
+            throw new ResourceNotFoundException("");
         }
 
-        if(user.isPresent()) {
-            User getuser = user.get();
-            if (travelJournal.getUser() != getuser) {
-                throw new ResourceNotFoundException("");
-            }
-        }
 
 
         if(photos.size() == 1){
@@ -96,7 +90,7 @@ public class NoteServiceImpl implements NoteService  {
             throw new BadRequestException("The specified date is outside the range of the travel journal.");
         }
 
-        if(createNoteDTO.getDescription().length() > 250){
+        if(createNoteDTO.getDescription().length() >= 250){
             throw new BadRequestException("The maximum limit for description is 250 characters.");
         }
 
@@ -105,7 +99,6 @@ public class NoteServiceImpl implements NoteService  {
         note.setDescription(createNoteDTO.getDescription());
         note.setDestinationName(createNoteDTO.getDestinationName());
         note.setTravelJournal(travelJournal);
-
         List<Files> files = new ArrayList<>();
         for(MultipartFile photo:photos){
             Files file = filesService.CheckAndSaveImage(photo);
@@ -157,18 +150,10 @@ public class NoteServiceImpl implements NoteService  {
         Optional<User> user = userService.getCurrentUser();
         Optional<Note> optionalNote = noteRepository.findById(noteId);
 
-        if (!optionalNote.isPresent()) {
-            throw new ResourceNotFoundException("Note with id: " + noteId + " does not exist");
+        if (!optionalNote.isPresent() || user.get().getUserId()!=travelJournal.getUser().getUserId()) {
+            throw new ResourceNotFoundException("");
         }
 
-        if(user.isPresent()) {
-            User getuser = user.get();
-            if (travelJournal.getUser() != getuser) {
-                throw new ResourceNotFoundException("");
-            }
-        }
-
-        // Validate mandatory fields (Name, Photos)
         if (createNoteDTO.getDestinationName() == null || createNoteDTO.getDestinationName().isEmpty()) {
             throw new BadRequestException("Destination name is required.");
         }
@@ -181,26 +166,18 @@ public class NoteServiceImpl implements NoteService  {
             }
         }
 
-        // Validate uploaded photos
         if (photos.size() >= 8) {
             throw new BadRequestException("A maximum of 7 photos can be uploaded.");
         }
 
-        // Validate text input fields (Name, Description & Itinerary) character limit
-        if (createNoteDTO.getDestinationName().length() > 250) {
+        if (createNoteDTO.getDestinationName().length() >= 250) {
             throw new BadRequestException("Destination name should be maximum 250 characters.");
         }
 
-        if (createNoteDTO.getDescription() != null && createNoteDTO.getDescription().length() > 250) {
+        if (createNoteDTO.getDescription().length() >= 250) {
             throw new BadRequestException("Description should be maximum 250 characters.");
         }
 
-        // Validate Date field
-        if (createNoteDTO.getDate() == null) {
-            throw new BadRequestException("Invalid date format.");
-        }
-
-        // Check if date is within the start and end date of the related TravelCard
         if(checkDateIsInTravelJournalDateInterval(getParsedDate(createNoteDTO.getDate()),travelJournal)){
             throw new BadRequestException("The specified date is outside the range of the travel journal.");
         }
@@ -210,32 +187,39 @@ public class NoteServiceImpl implements NoteService  {
         note.setDescription(createNoteDTO.getDescription());
         note.setDestinationName(createNoteDTO.getDestinationName());
 
-        List<Files> photosToDelete = new ArrayList<>();
-
-        // Identify photos to delete and keep
-        for (var newPhoto : note.getPhotos()) {
-            boolean found = false;
-            for (var photo : photos) {
-                if (Objects.equals(photo.getOriginalFilename(), newPhoto.getFileName())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                photosToDelete.add(newPhoto);
-            }
-        }
-
+        List<Files> photosToDelete = photosToErase(note.getPhotos(), photos);
         for(var files : photosToDelete){
             note.getPhotos().remove(files);
         }
         filesRepository.deleteAll(photosToDelete);
+
+        List<Files> photosToKeep = photosToSave(photos);
+        note.setPhotos(photosToKeep);
+        save(note);
+    }
+    @Override
+    public List<Files> photosToErase(List<Files> notePhotos, List<MultipartFile> photosToEdit){
+        List<Files> photosToDelete = new ArrayList<>();
+        List<String> existingPhotoNames = new ArrayList<>();
+
+        for (var photo : photosToEdit) {
+            existingPhotoNames.add(photo.getOriginalFilename());
+        }
+
+        for (var photo : notePhotos) {
+            if (!existingPhotoNames.contains(photo.getFileName())) {
+                photosToDelete.add(photo);
+            }
+        }
+        return  photosToDelete;
+    }
+    @Override
+    public List<Files>  photosToSave(List<MultipartFile> photos) throws IOException {
         List<Files> photosToKeep = new ArrayList<>();
         for(MultipartFile photo:photos){
             Files file = filesService.CheckAndSaveImage(photo);
             photosToKeep.add(file);
         }
-        note.setPhotos(photosToKeep);
-        save(note);
+        return photosToKeep;
     }
 }
