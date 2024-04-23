@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.entities.File;
 import travel.journal.api.exception.ResourceNotFoundException;
-import travel.journal.api.repositories.FilesRepository;
+import travel.journal.api.repositories.FileRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
 
-    private final FilesRepository filesRepository;
+    private final FileRepository fileRepository;
 
     @Override
     public File saveImage(MultipartFile file) throws IOException {
@@ -26,19 +26,19 @@ public class FileServiceImpl implements FileService {
         fileToCreate.setFileContent(file.getBytes());
         fileToCreate.setTitle(file.getName());
 
-        return filesRepository.save(fileToCreate);
+        return fileRepository.save(fileToCreate);
     }
 
     public void deleteImage(int id) {
-        if (filesRepository.existsById(id)) {
-            filesRepository.deleteById(id);
+        if (fileRepository.existsById(id)) {
+            fileRepository.deleteById(id);
         } else {
             throw new ResourceNotFoundException("File with id: " + id + " does not exist");
         }
     }
 
     public File modifyImage(int id, MultipartFile file) throws IOException {
-        Optional<File> existingImageOptional = filesRepository.findById(id);
+        Optional<File> existingImageOptional = fileRepository.findById(id);
 
         if (existingImageOptional.isPresent()) {
 
@@ -49,7 +49,7 @@ public class FileServiceImpl implements FileService {
             existingFile.setTitle(file.getName());
             existingFile.setCreatedDate(LocalDate.now());
 
-            return filesRepository.save(existingFile);
+            return fileRepository.save(existingFile);
         } else {
             return this.saveImage(file);
         }
@@ -57,7 +57,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public File CheckAndSaveImage(MultipartFile file) throws IOException {
-        File existingFile = filesRepository.findByFileName(file.getOriginalFilename());
+        File existingFile = fileRepository.findByFileName(file.getOriginalFilename());
 
         if (existingFile != null) {
             return existingFile;
@@ -67,6 +67,6 @@ public class FileServiceImpl implements FileService {
     }
 
     public File getImageById(int id) {
-        return filesRepository.findById(id).orElse(null);
+        return fileRepository.findById(id).orElse(null);
     }
 }

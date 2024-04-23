@@ -14,7 +14,7 @@ import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
 import travel.journal.api.exception.BadRequestException;
 import travel.journal.api.exception.ResourceNotFoundException;
-import travel.journal.api.repositories.FilesRepository;
+import travel.journal.api.repositories.FileRepository;
 import travel.journal.api.repositories.NoteRepository;
 import travel.journal.api.security.services.UserDetailsImpl;
 
@@ -31,15 +31,15 @@ public class NoteServiceImpl implements NoteService  {
     private final FileServiceImpl filesService;
     private final ModelMapper modelMapper;
     private final NoteRepository noteRepository;
-    private final FilesRepository filesRepository;
+    private final FileRepository fileRepository;
 
     private final UserService userService;
 
-    public NoteServiceImpl(TravelService travelService, FileServiceImpl filesService, NoteRepository noteRepository, FilesRepository filesRepository, UserService userService, ModelMapper modelMapper) {
+    public NoteServiceImpl(TravelService travelService, FileServiceImpl filesService, NoteRepository noteRepository, FileRepository fileRepository, UserService userService, ModelMapper modelMapper) {
         this.travelService = travelService;
         this.filesService = filesService;
         this.noteRepository = noteRepository;
-        this.filesRepository = filesRepository;
+        this.fileRepository = fileRepository;
         this.userService = userService;
         this.modelMapper = modelMapper;
     }
@@ -53,7 +53,7 @@ public class NoteServiceImpl implements NoteService  {
             User currentUser = optionalUser.get();
             if (currentUser.equals(optionalNote.get().getTravelJournal().getUser())) {
                 Note noteToDelete = optionalNote.get();
-                filesRepository.deleteAll(noteToDelete.getPhotos());
+                fileRepository.deleteAll(noteToDelete.getPhotos());
                 noteRepository.delete(noteToDelete);
             } else {
                 throw new ResourceNotFoundException("Note with id: " + id + " does not exist");
@@ -140,7 +140,6 @@ public class NoteServiceImpl implements NoteService  {
             throw new ResourceNotFoundException("");
 
         List<File> fileList = note.getPhotos();
-                //fileRepository.findByNoteId(noteId);
 
         NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
         noteDetailsDTO.setDate(getFormattedDate(note.getDate()));
