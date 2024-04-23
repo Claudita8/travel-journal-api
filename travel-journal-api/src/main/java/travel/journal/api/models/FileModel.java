@@ -4,7 +4,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class FilesModel {
+public class FileModel {
     private Integer fileId;
     private String fileName;
     private String title;

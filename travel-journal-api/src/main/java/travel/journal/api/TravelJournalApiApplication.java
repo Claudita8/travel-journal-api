@@ -10,7 +10,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import travel.journal.api.security.jwt.Password_Encoder;
 
-
 @SpringBootApplication
 @EnableWebMvc
 @EnableJpaRepositories

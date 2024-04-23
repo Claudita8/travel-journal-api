@@ -40,13 +40,13 @@ public class TravelJournal {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id", nullable = false)
-    private Files coverPhoto;
+    private File coverPhoto;
 
     @OneToMany(mappedBy = "travelJournal",cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("noteList")
     private List<Note> noteList;
 
-    public TravelJournal(int travelId, User user, String location, LocalDate startDate, LocalDate endDate, double budget, String description, Boolean hasCoverPhoto, Files coverPhoto, List<Note> noteList) {
+    public TravelJournal(int travelId, User user, String location, LocalDate startDate, LocalDate endDate, double budget, String description, Boolean hasCoverPhoto, File coverPhoto, List<Note> noteList) {
         this.travelId = travelId;
         this.user = user;
         this.location = location;
@@ -126,11 +126,11 @@ public class TravelJournal {
         this.hasCoverPhoto = hasCoverPhoto;
     }
 
-    public Files getCoverPhoto() {
+    public File getCoverPhoto() {
         return coverPhoto;
     }
 
-    public void setCoverPhoto(Files coverPhoto) {
+    public void setCoverPhoto(File coverPhoto) {
         this.coverPhoto = coverPhoto;
     }
 

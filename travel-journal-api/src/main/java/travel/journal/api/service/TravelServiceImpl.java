@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.travelJournal.inbound.TravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.CardTravelJournalDTO;
 import travel.journal.api.dto.travelJournal.outbound.TravelJournalDetailsDTO;
-import travel.journal.api.entities.Files;
+import travel.journal.api.entities.File;
 import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
 import travel.journal.api.exception.*;
@@ -24,19 +24,19 @@ import java.util.stream.Collectors;
 public class TravelServiceImpl implements TravelService {
 
     private final TravelJournalRepository travelRepository;
-    private final FilesServiceImpl filesService;
+    private final FileServiceImpl fileService;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-    public TravelServiceImpl(TravelJournalRepository travelRepository, FilesServiceImpl filesService, UserService userService, ModelMapper modelMapper) {
+    public TravelServiceImpl(TravelJournalRepository travelRepository, FileServiceImpl fileService, UserService userService, ModelMapper modelMapper) {
         this.travelRepository = travelRepository;
-        this.filesService = filesService;
+        this.fileService = fileService;
         this.userService = userService;
         this.modelMapper = modelMapper;
         this.modelMapper.addMappings(new PropertyMap<TravelJournal, TravelJournalDetailsDTO>() {
             @Override
             protected void configure() {
-                map().setCoverPhoto(source.getCoverPhoto());
+                map().setCoverPhotoId(source.getCoverPhoto().getFileId());
             }
         });
     }
@@ -56,11 +56,11 @@ public class TravelServiceImpl implements TravelService {
             throw new DuplicateTravelNameException("A card with the same name already exists");
         }
 
-        if(!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())){
+        if (!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())) {
             throw new InvalidDateRangeException("Start date must be before end date of the travel journal");
         }
 
-        Files createdFile = filesService.saveImage(file);
+        File createdFile = fileService.saveImage(file);
         travelToCreate.setCoverPhoto(createdFile);
         travelToCreate.setHasCoverPhoto(createdFile.getFileContent().length > 0);
 
@@ -114,11 +114,11 @@ public class TravelServiceImpl implements TravelService {
                 throw new DuplicateTravelNameException("A card with the same name already exists fot the current user");
             }
 
-            if(!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())){
+            if (!travelJournalDTO.getStartDate().isBefore(travelJournalDTO.getEndDate())) {
                 throw new InvalidDateRangeException("Start date must be before end date of the travel");
             }
 
-            Files modifiedImage = filesService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
+            File modifiedImage = fileService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
 
             existingTravel.setHasCoverPhoto(modifiedImage.getFileContent().length > 0);
             existingTravel.setCoverPhoto(modifiedImage);
@@ -137,6 +137,7 @@ public class TravelServiceImpl implements TravelService {
             throw new ResourceNotFoundException("Travel with id: " + id + " does not exist");
         }
     }
+
     @Override
     public void deleteTravelJournal(Integer id) {
         Optional<User> user = userService.getCurrentUser();
@@ -168,8 +169,8 @@ public class TravelServiceImpl implements TravelService {
         List<TravelJournal> userTravels = travelRepository.findByUserUserIdOrderByStartDateDesc(user.getUserId());
         return userTravels.stream().map(travelJournal -> {
             CardTravelJournalDTO dto = modelMapper.map(travelJournal, CardTravelJournalDTO.class);
-            int notesNumber = travelJournal.getNoteList().size();
-            dto.setNotesNumber(notesNumber);
+            dto.setCoverPhotoId(travelJournal.getCoverPhoto().getFileId());
+            dto.setNotesNumber(travelJournal.getNoteList().size());
             return dto;
         }).collect(Collectors.toList());
     }
