@@ -1,6 +1,7 @@
 package travel.journal.api.service;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,10 @@ import java.util.UUID;
 public class PasswordResetTokenServiceImpl implements PasswordResetTokenService {
     private final TokenRepository tokenRepository;
     private final JavaMailSender javaMailSender;
+    @Value("${travel-journal.appBaseUrl}")
+    private String appBaseUrl;
+    @Value("${spring.mail.username}")
+    private String senderEmail;
 
     public PasswordResetTokenServiceImpl(TokenRepository tokenRepository, JavaMailSender javaMailSender) {
         this.tokenRepository = tokenRepository;
@@ -36,16 +41,16 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     public boolean sendEmail(User user) {
         try {
             PasswordResetToken resetToken=generateResetToken(user);
-            String resetLink = "http://localhost:8080/api/user/resetPassword/";
+            String resetLink = appBaseUrl + "/resetPassword?token=";
 
             SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setFrom("noreply@stancuf.ro");
+            msg.setFrom(senderEmail);
             msg.setTo(user.getEmail());
 
-            msg.setSubject("Test");
+            msg.setSubject("Reset Password");
             LocalDateTime dateTime = LocalDateTime.now().plusMinutes(30);
             String formattedTime = dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-            msg.setText("Hello " + user.getFirstName() + " " + user.getLastName() + "\n\n" + "Please click on this link to reset your Password: " + resetLink+resetToken.getToken() + " . \n\n" + "This link will automatically expire on the hour: " + formattedTime);
+            msg.setText("Hello " + user.getFirstName() + " " + user.getLastName() + "\n\n" + "Please click on this link to reset your Password: " + resetLink + resetToken.getToken() + " . \n\n" + "This link will automatically expire on the hour: " + formattedTime);
 
             javaMailSender.send(msg);
             tokenRepository.save(resetToken);

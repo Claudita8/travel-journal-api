@@ -38,7 +38,7 @@ public class TravelJournal {
     @Column(name = "has_cover_photo")
     private Boolean hasCoverPhoto;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id", nullable = false)
     private File coverPhoto;
 
