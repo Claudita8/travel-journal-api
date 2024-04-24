@@ -2,6 +2,7 @@ package travel.journal.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import travel.journal.api.entities.File;
 import travel.journal.api.service.FileService;
+
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -33,10 +36,14 @@ public class FileController {
         HttpHeaders headers = new HttpHeaders();
         String imageName = image.getFileName();
         headers.setContentType(MediaTypeFactory.getMediaType(imageName).orElse(MediaType.APPLICATION_OCTET_STREAM));
-        headers.setContentDispositionFormData("fileName", imageName);
+        headers.setContentDisposition(
+                ContentDisposition.attachment()
+                        .filename(imageName)
+                        .build());
         headers.setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS)
                 .noTransform()
                 .mustRevalidate());
+        headers.setAccessControlExposeHeaders(Collections.singletonList(HttpHeaders.CONTENT_DISPOSITION));
         return new ResponseEntity<>(image.getFileContent(), headers, HttpStatus.OK);
     }
 
