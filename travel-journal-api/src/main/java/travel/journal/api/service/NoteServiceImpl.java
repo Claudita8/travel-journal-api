@@ -131,11 +131,11 @@ public class NoteServiceImpl implements NoteService  {
         if (note == null)
             throw new ResourceNotFoundException("");
 
-        List<File> filesList = note.getPhotos();
+        List<File> fileList = note.getPhotos();
 
         NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
         noteDetailsDTO.setDate(getFormattedDate(note.getDate()));
-        noteDetailsDTO.setFileList(filesList);
+        noteDetailsDTO.setFileList(fileList);
 
         return noteDetailsDTO;
     }

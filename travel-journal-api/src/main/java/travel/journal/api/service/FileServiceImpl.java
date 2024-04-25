@@ -51,7 +51,7 @@ public class FileServiceImpl implements FileService{
 
             return fileRepository.save(existingFile);
         } else {
-           return this.saveImage(file);
+            return this.saveImage(file);
         }
     }
 
@@ -66,7 +66,6 @@ public class FileServiceImpl implements FileService{
         }
     }
 
-    @Override
     public File getImageById(int id) {
         return fileRepository.findById(id).orElse(null);
     }
