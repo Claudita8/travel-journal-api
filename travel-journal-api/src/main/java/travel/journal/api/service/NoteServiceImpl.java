@@ -187,8 +187,8 @@ public class NoteServiceImpl implements NoteService  {
         existingNote.setDestinationName(createNoteDTO.getDestinationName());
 
         List<File> photoToDelete = photoToErase(existingNote.getPhotos(), photos);
-        for(var file : photoToDelete){
-            existingNote.getPhotos().remove(file);
+        for(var photo : photoToDelete){
+            existingNote.getPhotos().remove(photo);
         }
         fileRepository.deleteAll(photoToDelete);
 
