@@ -8,10 +8,11 @@ import java.time.LocalDate;
 @Data
 public class CardTravelJournalDTO {
     private Integer travelId;
-    private File coverPhoto;
+    private Integer coverPhotoId;
     private String location;
     private LocalDate startDate;
     private LocalDate endDate;
     private Double budget;
+    private String description;
     private Integer notesNumber;
 }

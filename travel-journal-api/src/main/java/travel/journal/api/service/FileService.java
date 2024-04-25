@@ -13,4 +13,6 @@ public interface FileService {
     File modifyImage(int id, MultipartFile file) throws IOException;
 
     File CheckAndSaveImage(MultipartFile file) throws IOException;
+
+    File getImageById(int id);
 }

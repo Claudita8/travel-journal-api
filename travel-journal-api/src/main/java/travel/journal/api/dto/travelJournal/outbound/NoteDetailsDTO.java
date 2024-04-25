@@ -13,7 +13,7 @@ import java.util.List;
 public class NoteDetailsDTO {
     private Integer travelId;
     private Integer noteId;
-    private List<File> filesList;
+    private List<File> fileList;
     private String destinationName;
     private String date;
     private String description;

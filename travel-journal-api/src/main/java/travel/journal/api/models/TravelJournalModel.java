@@ -17,6 +17,6 @@ public class TravelJournalModel {
     private double budget;
     private String description;
     private Boolean hasCoverPhoto;
-    private FilesModel coverPhoto;
+    private FileModel coverPhoto;
     private List<NoteDetailsDTO> notesList;
  }

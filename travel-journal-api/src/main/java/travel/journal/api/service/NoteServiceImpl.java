@@ -133,7 +133,7 @@ public class NoteServiceImpl implements NoteService  {
         List<File> filesList = note.getPhotos();
         NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
         noteDetailsDTO.setDate(getFormattedDate(note.getDate()));
-        noteDetailsDTO.setFilesList(filesList);
+        noteDetailsDTO.setFileList(filesList);
         return noteDetailsDTO;
     }
 
