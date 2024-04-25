@@ -4,7 +4,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import travel.journal.api.entities.File;
 import travel.journal.api.models.FileModel;
-
 @Component
 public class FileMapper {
     private final ModelMapper modelMapper;

@@ -23,15 +23,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class TravelServiceImpl implements TravelService {
-
     private final TravelJournalRepository travelRepository;
-    private final FileServiceImpl filesService;
+    private final FileServiceImpl fileService;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-    public TravelServiceImpl(TravelJournalRepository travelRepository, FileServiceImpl filesService, UserService userService, ModelMapper modelMapper) {
+    public TravelServiceImpl(TravelJournalRepository travelRepository, FileServiceImpl fileService, UserService userService, ModelMapper modelMapper) {
         this.travelRepository = travelRepository;
-        this.filesService = filesService;
+        this.fileService = fileService;
         this.userService = userService;
         this.modelMapper = modelMapper;
         this.modelMapper.addMappings(new PropertyMap<TravelJournal, TravelJournalDetailsDTO>() {
@@ -61,7 +60,7 @@ public class TravelServiceImpl implements TravelService {
             throw new InvalidDateRangeException("Start date must be before end date of the travel journal");
         }
 
-        File createdFile = filesService.saveImage(file);
+        File createdFile = fileService.saveImage(file);
         travelToCreate.setCoverPhoto(createdFile);
         travelToCreate.setHasCoverPhoto(createdFile.getFileContent().length > 0);
 
@@ -125,7 +124,7 @@ public class TravelServiceImpl implements TravelService {
                 throw new InvalidDateRangeException("Start date must be before end date of the travel");
             }
 
-            File modifiedImage = filesService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
+            File modifiedImage = fileService.modifyImage(existingTravel.getCoverPhoto().getFileId(), file);
 
             existingTravel.setHasCoverPhoto(modifiedImage.getFileContent().length > 0);
             existingTravel.setCoverPhoto(modifiedImage);

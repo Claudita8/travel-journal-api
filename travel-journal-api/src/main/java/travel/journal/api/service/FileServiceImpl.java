@@ -1,5 +1,6 @@
 package travel.journal.api.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.entities.File;
@@ -11,12 +12,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class FileServiceImpl implements FileService{
 
     private final FileRepository fileRepository;
-    public FileServiceImpl(FileRepository fileRepository) {
-        this.fileRepository = fileRepository;
-    }
 
     @Override
     public File saveImage(MultipartFile file) throws IOException {
@@ -33,8 +32,7 @@ public class FileServiceImpl implements FileService{
     public void deleteImage(int id){
        if(fileRepository.existsById(id)){
            fileRepository.deleteById(id);
-       }
-       else{
+       } else {
            throw new ResourceNotFoundException("File with id: " + id + " does not exist");
        }
     }
@@ -52,8 +50,7 @@ public class FileServiceImpl implements FileService{
             existingFile.setCreatedDate(LocalDate.now());
 
             return fileRepository.save(existingFile);
-        }
-        else{
+        } else {
            return this.saveImage(file);
         }
     }

@@ -95,6 +95,7 @@ public class NoteServiceImpl implements NoteService  {
         note.setDescription(createNoteDTO.getDescription());
         note.setDestinationName(createNoteDTO.getDestinationName());
         note.setTravelJournal(travelJournal);
+
         List<File> files = new ArrayList<>();
         for(MultipartFile photo:photos){
             File file = filesService.CheckAndSaveImage(photo);
@@ -131,9 +132,11 @@ public class NoteServiceImpl implements NoteService  {
             throw new ResourceNotFoundException("");
 
         List<File> filesList = note.getPhotos();
+
         NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
         noteDetailsDTO.setDate(getFormattedDate(note.getDate()));
         noteDetailsDTO.setFileList(filesList);
+
         return noteDetailsDTO;
     }
 
