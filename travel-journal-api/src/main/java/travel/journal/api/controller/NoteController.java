@@ -40,4 +40,11 @@ public class NoteController {
     public NoteDetailsDTO getNoteDetails(@PathVariable int travelId, @PathVariable int noteId) {
         return noteService.getNoteDetails(travelId, noteId);
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/travels/{travelId}/notes/{noteId}")
+    public ResponseEntity<?> editNote(@PathVariable("travelId") Integer id, @PathVariable("noteId") Integer noteId, @Valid @RequestPart("CreateNoteDTO") CreateNoteDTO createNoteDTO, @RequestParam("files") List<MultipartFile> files) throws IOException {
+        noteService.editNote(id, noteId, createNoteDTO, files);
+        return ResponseEntity.ok().build();
+    }
 }

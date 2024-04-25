@@ -26,6 +26,9 @@ public interface TravelService {
     void deleteTravelJournal(Integer id);
 
     TravelJournal getTravelJournalById(int id);
+
     List<CardTravelJournalDTO> getUserTravelJournals();
+
+    TravelJournal findByUserUserIdAndTravelId(int userId, int travelId);
 }
 
