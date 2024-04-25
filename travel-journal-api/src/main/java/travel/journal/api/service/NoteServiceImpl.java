@@ -8,39 +8,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import travel.journal.api.dto.CreateNoteDTO;
 import travel.journal.api.dto.travelJournal.outbound.NoteDetailsDTO;
-import travel.journal.api.entities.Files;
+import travel.journal.api.entities.File;
 import travel.journal.api.entities.Note;
 import travel.journal.api.entities.TravelJournal;
 import travel.journal.api.entities.User;
 import travel.journal.api.exception.BadRequestException;
 import travel.journal.api.exception.ResourceNotFoundException;
-import travel.journal.api.repositories.FilesRepository;
+import travel.journal.api.repositories.FileRepository;
 import travel.journal.api.repositories.NoteRepository;
 import travel.journal.api.security.services.UserDetailsImpl;
-
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class NoteServiceImpl implements NoteService  {
     private final TravelService travelService;
-    private final FilesServiceImpl filesService;
+    private final FileServiceImpl filesService;
     private final ModelMapper modelMapper;
     private final NoteRepository noteRepository;
-    private final FilesRepository filesRepository;
+    private final FileRepository fileRepository;
     private final UserService userService;
 
-    public NoteServiceImpl(TravelService travelService, FilesServiceImpl filesService, NoteRepository noteRepository, FilesRepository filesRepository, UserService userService, ModelMapper modelMapper) {
+    public NoteServiceImpl(TravelService travelService, FileServiceImpl filesService, NoteRepository noteRepository, FileRepository fileRepository, UserService userService, ModelMapper modelMapper) {
         this.travelService = travelService;
         this.filesService = filesService;
         this.noteRepository = noteRepository;
-        this.filesRepository = filesRepository;
+        this.fileRepository = fileRepository;
         this.userService = userService;
         this.modelMapper = modelMapper;
     }
@@ -54,7 +52,7 @@ public class NoteServiceImpl implements NoteService  {
             User currentUser = optionalUser.get();
             if (currentUser.equals(optionalNote.get().getTravelJournal().getUser())) {
                 Note noteToDelete = optionalNote.get();
-                filesRepository.deleteAll(noteToDelete.getPhotos());
+                fileRepository.deleteAll(noteToDelete.getPhotos());
                 noteRepository.delete(noteToDelete);
             } else {
                 throw new ResourceNotFoundException("Note with id: " + noteId + " does not exist");
@@ -97,9 +95,9 @@ public class NoteServiceImpl implements NoteService  {
         note.setDescription(createNoteDTO.getDescription());
         note.setDestinationName(createNoteDTO.getDestinationName());
         note.setTravelJournal(travelJournal);
-        List<Files> files = new ArrayList<>();
+        List<File> files = new ArrayList<>();
         for(MultipartFile photo:photos){
-            Files file = filesService.CheckAndSaveImage(photo);
+            File file = filesService.CheckAndSaveImage(photo);
             files.add(file);
         }
         note.setPhotos(files);
@@ -132,7 +130,7 @@ public class NoteServiceImpl implements NoteService  {
         if (note == null)
             throw new ResourceNotFoundException("");
 
-        List<Files> filesList = note.getPhotos();
+        List<File> filesList = note.getPhotos();
         NoteDetailsDTO noteDetailsDTO = modelMapper.map(note, NoteDetailsDTO.class);
         noteDetailsDTO.setDate(getFormattedDate(note.getDate()));
         noteDetailsDTO.setFilesList(filesList);
@@ -145,12 +143,12 @@ public class NoteServiceImpl implements NoteService  {
 
     public void editNote(int travelJournalId, int noteId, CreateNoteDTO createNoteDTO, List<MultipartFile> photos) throws IOException {
         Optional<User> user = userService.getCurrentUser();
-        Note note = noteRepository
-                .findByTravelJournal_User_UserIdAndTravelJournal_TravelIdAndNoteId(user.get().getUserId(), travelJournalId, noteId);
-        if (note == null) {
+        Note existingNote = noteRepository
+                            .findByTravelJournal_User_UserIdAndTravelJournal_TravelIdAndNoteId(user.get().getUserId(), travelJournalId, noteId);
+        if (existingNote == null) {
             throw new ResourceNotFoundException("");
         }
-        TravelJournal travelJournal = note.getTravelJournal();
+        TravelJournal travelJournal = existingNote.getTravelJournal();
 
         if (createNoteDTO.getDestinationName() == null || createNoteDTO.getDestinationName().isEmpty()) {
             throw new BadRequestException("Destination name is required.");
@@ -180,43 +178,39 @@ public class NoteServiceImpl implements NoteService  {
             throw new BadRequestException("The specified date is outside the range of the travel journal.");
         }
 
-        note.setDate(getParsedDate(createNoteDTO.getDate()));
-        note.setDescription(createNoteDTO.getDescription());
-        note.setDestinationName(createNoteDTO.getDestinationName());
+        existingNote.setDate(getParsedDate(createNoteDTO.getDate()));
+        existingNote.setDescription(createNoteDTO.getDescription());
+        existingNote.setDestinationName(createNoteDTO.getDestinationName());
 
-        List<Files> photosToDelete = photosToErase(note.getPhotos(), photos);
-        for(var files : photosToDelete){
-            note.getPhotos().remove(files);
+        List<File> photoToDelete = photoToErase(existingNote.getPhotos(), photos);
+        for(var file : photoToDelete){
+            existingNote.getPhotos().remove(file);
         }
-        filesRepository.deleteAll(photosToDelete);
+        fileRepository.deleteAll(photoToDelete);
 
-        List<Files> photosToKeep = photosToSave(photos);
-        note.setPhotos(photosToKeep);
-        save(note);
+        List<File> photoToKeep = photoToSave(photos);
+        existingNote.setPhotos(photoToKeep);
+        save(existingNote);
     }
+
     @Override
-    public List<Files> photosToErase(List<Files> notePhotos, List<MultipartFile> photosToEdit){
-        List<Files> photosToDelete = new ArrayList<>();
-        List<String> existingPhotoNames = new ArrayList<>();
+    public List<File> photoToErase(List<File> notePhotos, List<MultipartFile> photosToEdit){
+        List<String> existingPhotoNames = photosToEdit.stream()
+                .map(MultipartFile::getOriginalFilename)
+                .toList();
 
-        for (var photo : photosToEdit) {
-            existingPhotoNames.add(photo.getOriginalFilename());
-        }
-
-        for (var photo : notePhotos) {
-            if (!existingPhotoNames.contains(photo.getFileName())) {
-                photosToDelete.add(photo);
-            }
-        }
-        return  photosToDelete;
+        return notePhotos.stream()
+                .filter(photo -> !existingPhotoNames.contains(photo.getFileName()))
+                .collect(Collectors.toList());
     }
+
     @Override
-    public List<Files>  photosToSave(List<MultipartFile> photos) throws IOException {
-        List<Files> photosToKeep = new ArrayList<>();
-        for(MultipartFile photo:photos){
-            Files file = filesService.CheckAndSaveImage(photo);
-            photosToKeep.add(file);
+    public List<File>  photoToSave(List<MultipartFile> photos) throws IOException {
+        List<File> photoToKeep = new ArrayList<>();
+        for(MultipartFile photo : photos){
+            File file = filesService.CheckAndSaveImage(photo);
+            photoToKeep.add(file);
         }
-        return photosToKeep;
+        return photoToKeep;
     }
 }
