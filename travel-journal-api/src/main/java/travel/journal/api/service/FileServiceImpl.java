@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class FileServiceImpl implements FileService{
+public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
 
@@ -29,8 +29,8 @@ public class FileServiceImpl implements FileService{
         return fileRepository.save(fileToCreate);
     }
 
-    public void deleteImage(int id){
-       if(fileRepository.existsById(id)){
+    public void deleteImage(int id) {
+       if(fileRepository.existsById(id)) {
            fileRepository.deleteById(id);
        } else {
            throw new ResourceNotFoundException("File with id: " + id + " does not exist");
