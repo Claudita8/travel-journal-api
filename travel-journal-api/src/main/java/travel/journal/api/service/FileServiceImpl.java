@@ -30,11 +30,11 @@ public class FileServiceImpl implements FileService {
     }
 
     public void deleteImage(int id) {
-       if(fileRepository.existsById(id)) {
-          fileRepository.deleteById(id);
-       } else {
-          throw new ResourceNotFoundException("File with id: " + id + " does not exist");
-       }
+        if (fileRepository.existsById(id)) {
+            fileRepository.deleteById(id);
+        } else {
+            throw new ResourceNotFoundException("File with id: " + id + " does not exist");
+        }
     }
 
     public File modifyImage(int id, MultipartFile file) throws IOException {
