@@ -81,7 +81,11 @@ public class TravelServiceImpl implements TravelService {
         if (travel.getUser().getUserId() == userId) {
             TravelJournalDetailsDTO travelJournalDetailsDTO = modelMapper.map(travel, TravelJournalDetailsDTO.class);
             List<NoteEntryDTO> noteEntryDTOList = travel.getNoteList().stream()
-                    .map(note -> modelMapper.map(note, NoteEntryDTO.class))
+                    .map(note -> {
+                        NoteEntryDTO noteEntryDTO = modelMapper.map(note, NoteEntryDTO.class);
+                        noteEntryDTO.setFileIds(note.getPhotos().stream().map(File::getFileId).toList());
+                        return noteEntryDTO;
+                    })
                     .collect(Collectors.toList());
             travelJournalDetailsDTO.setNotesList(noteEntryDTOList);
             travelJournalDetailsDTO.setNotesNumber(noteEntryDTOList.size());
